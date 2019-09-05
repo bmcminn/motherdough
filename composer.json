@@ -1,24 +1,24 @@
 {
-    "name": "gbox/starter-api",
-    "description": "A boilerplate API framework based on Slim PHP with JWT Auth out of the box",
-    "keywords": ["boilerplate", "php", "api", "slim"],
-    "homepage": "https://github.com/bmcminn/starter-api",
+    "name": "slim/slim-skeleton",
+    "description": "A Slim Framework skeleton application for rapid development",
+    "keywords": ["microframework", "rest", "router", "psr7"],
+    "homepage": "http://github.com/slimphp/Slim-Skeleton",
     "license": "MIT",
     "authors": [
         {
             "name": "Brandtley McMinn",
             "email": "labs@gbox.name",
-            "homepage": "http://brandtley.name/"
+            "homepage": "https://github.com/bmcminn"
         }
     ],
     "require": {
         "php": ">=7.1",
-        "filp/whoops": "^2.5",
-        "monolog/monolog": "^2.0",
-        "opis/database": "^4.1",
+        "ext-json": "*",
+        "delight-im/auth": "^8.1",
+        "monolog/monolog": "^1.24",
         "php-di/php-di": "^6.0",
-        "slim/psr7": "^0.5.0",
-        "slim/slim": "^4.2",
+        "slim/psr7": "^0.5",
+        "slim/slim": "^4.1",
         "vlucas/phpdotenv": "^3.5"
     },
     "require-dev": {
@@ -29,6 +29,7 @@
             "App\\": "src/"
         },
         "files": [
+            "app/bootstrap.php",
             "app/helpers.php"
         ]
     },
@@ -42,6 +43,7 @@
         "sort-packages": true
     },
     "scripts": {
-        "start": "php -S localhost:3005 -t public"
+        "start": "php -S localhost:8080 -t public",
+        "test": "phpunit"
     }
 }

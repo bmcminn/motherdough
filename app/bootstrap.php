@@ -5,7 +5,7 @@ use Opis\Database\Database;
 
 // SETUP PATH ALIASES
 $ROOT_DIR = realpath(getcwd() . '/..');
-define('ROOT_DIR', $ROOT_DIR);
+const ROOT_DIR  = $ROOT_DIR;
 
 
 // DEV LOAD ENVIRONMENT
@@ -21,11 +21,9 @@ $dotenv->required([
 ]);
 
 
-
-
 $IS_DEV = env('ENV', 'production') !== 'production';
-define('IS_DEV',    $IS_DEV);
-define('IS_PROD',   !$IS_DEV);
+const IS_DEV    = $IS_DEV;
+const IS_PROD   = !$IS_DEV;
 
 
 // DEV RUN WHOOPS!

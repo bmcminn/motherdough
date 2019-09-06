@@ -4,3 +4,7 @@
 /logs/*
 !/logs/README.md
 /var/cache/*
+__*
+*.db
+.env*
+!.env.example

@@ -15,6 +15,8 @@
         "php": ">=7.1",
         "ext-json": "*",
         "delight-im/auth": "^8.1",
+        "delight-im/db": "^1.3",
+        "filp/whoops": "^2.5",
         "monolog/monolog": "^1.24",
         "php-di/php-di": "^6.0",
         "slim/psr7": "^0.5",
@@ -29,8 +31,8 @@
             "App\\": "src/"
         },
         "files": [
-            "app/bootstrap.php",
-            "app/helpers.php"
+            "app/helpers.php",
+            "app/bootstrap.php"
         ]
     },
     "autoload-dev": {

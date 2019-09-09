@@ -2,43 +2,26 @@
 
 declare(strict_types=1);
 
-// use App\Application\Handlers\HttpErrorHandler;
-// use App\Application\Handlers\ShutdownHandler;
-// use App\Application\ResponseEmitter\ResponseEmitter;
+use Slim\Factory\AppFactory;
 // use DI\ContainerBuilder;
 // use Slim\Factory\AppFactory;
 // use Slim\Factory\ServerRequestCreatorFactory;
 
 
-// use Delight\Db;
-
-
 require __DIR__ . '/../vendor/autoload.php';
 
 
-$path = buildPath(ROOT_DIR, 'awesomse.jpg');
+// Create App instance
+$app = AppFactory::create();
 
 
-log_debug('buildPath result', $path);
+// Add Routing Middleware
+$app->addRoutingMiddleware();
 
 
-// $dataSource = new Db\PdoDataSource('sqlite'); // see "Available drivers for database systems" below
-// // $dataSource->setHostname('localhost');
-// // $dataSource->setPort(3306);
-// // $dataSource->setDatabaseName('./data/main.db');
-// $dataSource->setFilePath(DATA_DIR . '/main.db');
-// // $dataSource->setCharset('UTF8');
-// // $dataSource->setUsername('my-username');
-// // $dataSource->setPassword('my-password');
-
-// $db = Db\PdoDatabase::fromDataSource($dataSource);
-
-
-
-
-// $rows = $db->select('SELECT id, name FROM books');
-
-
+// Add routes to App instance
+$routes = require ROOT_DIR . '/app/routes.php';
+$routes($app);
 
 
 
@@ -108,12 +91,15 @@ log_debug('buildPath result', $path);
 // $app->addRoutingMiddleware();
 
 
-// // Add Error Middleware
-// $errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, false, false);
-// $errorMiddleware->setDefaultErrorHandler($errorHandler);
+// Add Error Middleware
+$displayErrorDetails = IS_DEV ? true : false;
+$errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, false, false);
+$errorMiddleware->setDefaultErrorHandler($errorHandler);
 
 
 // // Run App & Emit Response
 // $response = $app->handle($request);
 // $responseEmitter = new ResponseEmitter();
 // $responseEmitter->emit($response);
+
+$app->run();

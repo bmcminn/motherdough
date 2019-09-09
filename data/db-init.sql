@@ -4,7 +4,10 @@
 
 PRAGMA foreign_keys = OFF;
 
-CREATE TABLE "users" (
+
+-- BUILD USER TABLE
+-- -----------------------------------
+CREATE TABLE IF NOT EXISTS "users" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL CHECK ("id" >= 0),
     "email" VARCHAR(249) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
@@ -19,7 +22,10 @@ CREATE TABLE "users" (
     CONSTRAINT "email" UNIQUE ("email")
 );
 
-CREATE TABLE "users_confirmations" (
+
+-- BUILD USERS CONFIRMATION TABLE
+-- -----------------------------------
+CREATE TABLE IF NOT EXISTS "users_confirmations" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL CHECK ("id" >= 0),
     "user_id" INTEGER NOT NULL CHECK ("user_id" >= 0),
     "email" VARCHAR(249) NOT NULL,
@@ -28,10 +34,13 @@ CREATE TABLE "users_confirmations" (
     "expires" INTEGER NOT NULL CHECK ("expires" >= 0),
     CONSTRAINT "selector" UNIQUE ("selector")
 );
-CREATE INDEX "users_confirmations.email_expires" ON "users_confirmations" ("email", "expires");
-CREATE INDEX "users_confirmations.user_id" ON "users_confirmations" ("user_id");
+CREATE INDEX IF NOT EXISTS "users_confirmations.email_expires" ON "users_confirmations" ("email", "expires");
+CREATE INDEX IF NOT EXISTS "users_confirmations.user_id" ON "users_confirmations" ("user_id");
 
-CREATE TABLE "users_remembered" (
+
+-- BUILD USERS REMEMBERED TABLE
+-- -----------------------------------
+CREATE TABLE IF NOT EXISTS "users_remembered" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL CHECK ("id" >= 0),
     "user" INTEGER NOT NULL CHECK ("user" >= 0),
     "selector" VARCHAR(24) NOT NULL,
@@ -39,9 +48,12 @@ CREATE TABLE "users_remembered" (
     "expires" INTEGER NOT NULL CHECK ("expires" >= 0),
     CONSTRAINT "selector" UNIQUE ("selector")
 );
-CREATE INDEX "users_remembered.user" ON "users_remembered" ("user");
+CREATE INDEX IF NOT EXISTS "users_remembered.user" ON "users_remembered" ("user");
 
-CREATE TABLE "users_resets" (
+
+-- BUILD USERS RESETS TABLE
+-- -----------------------------------
+CREATE TABLE IF NOT EXISTS "users_resets" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL CHECK ("id" >= 0),
     "user" INTEGER NOT NULL CHECK ("user" >= 0),
     "selector" VARCHAR(20) NOT NULL,
@@ -49,12 +61,24 @@ CREATE TABLE "users_resets" (
     "expires" INTEGER NOT NULL CHECK ("expires" >= 0),
     CONSTRAINT "selector" UNIQUE ("selector")
 );
-CREATE INDEX "users_resets.user_expires" ON "users_resets" ("user", "expires");
+CREATE INDEX IF NOT EXISTS "users_resets.user_expires" ON "users_resets" ("user", "expires");
 
-CREATE TABLE "users_throttling" (
+
+-- BUILD USERS THROTTLING TABLE
+-- -----------------------------------
+CREATE TABLE IF NOT EXISTS "users_throttling" (
     "bucket" VARCHAR(44) PRIMARY KEY NOT NULL,
     "tokens" REAL NOT NULL CHECK ("tokens" >= 0),
     "replenished_at" INTEGER NOT NULL CHECK ("replenished_at" >= 0),
     "expires_at" INTEGER NOT NULL CHECK ("expires_at" >= 0)
 );
-CREATE INDEX "users_throttling.expires_at" ON "users_throttling" ("expires_at");
+CREATE INDEX IF NOT EXISTS "users_throttling.expires_at" ON "users_throttling" ("expires_at");
+
+
+-- BUILD USER PROFILES TABLE
+-- -----------------------------------
+CREATE TABLE IF NOT EXISTS "users_profile" (
+    "nickname" VARCHAR(44) PRIMARY KEY NOT NULL,
+    "birthdate" INTEGER NOT NULL CHECK ("birthdate" >= -1270237152)
+);
+-- CREATE INDEX IF NOT EXISTS "profiles.expires_at" ON "profiles" ("expires_at");

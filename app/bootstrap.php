@@ -15,16 +15,22 @@ $dotenv = Dotenv\Dotenv::create(ROOT_DIR);
 $dotenv->overload();
 
 $dotenv->required([
-    'DB_TYPE',
-    'DB_HOST',
-    'DB_PASSWORD',
+	'APP_TIMEZONE',
+    'DB_DATABASE',
+    'DB_HOSTNAME',
+    // 'DB_PASSWORD',
+    // 'DB_USERNAME',
 ]);
 
 
+// DEFINE ENVIRONMENT CONSTANTS
 $IS_DEV = env('ENV', 'production') !== 'production';
 define('IS_DEV',  $IS_DEV);
 define('IS_PROD', !$IS_DEV);
 
+
+// SET SERVER CONFIGS
+date_default_timezone_set(env('APP_TIMEZONE'));
 
 // DEV RUN WHOOPS!
 $whoops = new \Whoops\Run;
@@ -42,17 +48,14 @@ $whoops->register();
 // $db = new Database($connection);
 
 
-$DB_TYPE = env('DB_TYPE');
+$DB_DATABASE = env('DB_DATABASE', 'sqlite');
 $DB_PATH = buildPath(DATA_DIR, env('DB_FILEPATH', ''));
-
-log_debug($DB_PATH);
 
 $db = Db\PdoDatabase::fromDsn(
     new Db\PdoDsn(
-        "{$DB_TYPE}:{$DB_PATH}",
+        "{$DB_DATABASE}:{$DB_PATH}",
         env('DB_USERNAME', null),
         env('DB_PASSWORD', null)
     )
 );
 
-$rows = $db->select('SELECT id, name FROM books');

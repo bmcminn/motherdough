@@ -5,6 +5,7 @@
 PRAGMA foreign_keys = OFF;
 
 
+
 -- BUILD USER TABLE
 -- -----------------------------------
 CREATE TABLE IF NOT EXISTS "users" (
@@ -23,6 +24,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 );
 
 
+
 -- BUILD USERS CONFIRMATION TABLE
 -- -----------------------------------
 CREATE TABLE IF NOT EXISTS "users_confirmations" (
@@ -38,6 +40,7 @@ CREATE INDEX IF NOT EXISTS "users_confirmations.email_expires" ON "users_confirm
 CREATE INDEX IF NOT EXISTS "users_confirmations.user_id" ON "users_confirmations" ("user_id");
 
 
+
 -- BUILD USERS REMEMBERED TABLE
 -- -----------------------------------
 CREATE TABLE IF NOT EXISTS "users_remembered" (
@@ -49,6 +52,7 @@ CREATE TABLE IF NOT EXISTS "users_remembered" (
     CONSTRAINT "selector" UNIQUE ("selector")
 );
 CREATE INDEX IF NOT EXISTS "users_remembered.user" ON "users_remembered" ("user");
+
 
 
 -- BUILD USERS RESETS TABLE
@@ -64,6 +68,7 @@ CREATE TABLE IF NOT EXISTS "users_resets" (
 CREATE INDEX IF NOT EXISTS "users_resets.user_expires" ON "users_resets" ("user", "expires");
 
 
+
 -- BUILD USERS THROTTLING TABLE
 -- -----------------------------------
 CREATE TABLE IF NOT EXISTS "users_throttling" (
@@ -75,10 +80,27 @@ CREATE TABLE IF NOT EXISTS "users_throttling" (
 CREATE INDEX IF NOT EXISTS "users_throttling.expires_at" ON "users_throttling" ("expires_at");
 
 
+
 -- BUILD USER PROFILES TABLE
 -- -----------------------------------
 CREATE TABLE IF NOT EXISTS "users_profile" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL CHECK ("id" >= 0),
+    "user" INTEGER NOT NULL CHECK ("user" >= 0),
     "nickname" VARCHAR(44) PRIMARY KEY NOT NULL,
     "birthdate" INTEGER NOT NULL CHECK ("birthdate" >= -1270237152)
 );
 -- CREATE INDEX IF NOT EXISTS "profiles.expires_at" ON "profiles" ("expires_at");
+
+
+
+-- BUILD USER SESSIONS TABLE
+-- -----------------------------------
+CREATE TABLE IF NOT EXISTS "users_sessions" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL CHECK ("id" >= 0),
+    "user_id" INTEGER NOT NULL CHECK ("user_id" >= 0),
+    "authtoken" VARCHAR(44) PRIMARY KEY NOT NULL,
+    "expires_at" INTEGER NOT NULL CHECK ("expires_at" >= 0)
+    CONSTRAINT "email" UNIQUE ("email")
+);
+CREATE INDEX IF NOT EXISTS "session.expires_at" ON "users_sessions" ("expires_at");
+CREATE INDEX IF NOT EXISTS "session.user_id" ON "users_sessions" ("user_id");

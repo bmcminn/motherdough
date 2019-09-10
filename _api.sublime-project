@@ -1,0 +1,20 @@
+{
+	"folders":
+	[
+		{
+			"path": ".",
+            "file_exclude_patterns": [
+                "*.sublime-workspace",
+                ".coveralls*",
+                ".editorconfig",
+                ".travis*",
+                "docker*",
+                "*.lock",
+                "*.db",
+            ],
+            "folder_exclude_patterns": [
+                "vendor",
+            ]
+		}
+	]
+}

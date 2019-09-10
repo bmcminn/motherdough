@@ -1,21 +1,32 @@
 <?php
 
-declare(strict_types=1);
-
-
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
-use Slim\Interfaces\RouteCollectorProxyInterface as Group;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 
-return function(App $app) {
+return function (App $app) {
+
+    $DI = $app->getContainer();
 
 
-	$app->get('/hello/{name}', function (Request $req, Response $res, array $args) {
-	    $name = $args['name'];
-	    $res->getBody()->write("Hello, {$name}");
-	    return $res;
-	});
+    $app->get('/[{name}]',
+        function (Request $request, Response $response, array $args)
+        use ($DI) {
+            // Sample log message
+            $DI->get('logger')->info("Slim-Skeleton '/' route");
+
+            // Render index view
+            return $response->write('hello');
+        });
+
+
+    $authRoutes = require ROUTES_DIR . '/auth.php';
+    $app->group('/auth', $authRoutes);
+
+
+    $apiRoutes = require ROUTES_DIR . '/api.php';
+    $app->group('/api', $apiRoutes);
+
 
 };

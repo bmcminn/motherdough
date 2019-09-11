@@ -11,7 +11,7 @@ return function (App $app) {
     // TODO: should these be per route/group middlewares?
 
     // add CSRF guard middleware
-    $app->add($DI->get('csrf'));
+    // $app->add($DI->get('csrf'));
 
 
     // Setup Auth Middleware

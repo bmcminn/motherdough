@@ -13,33 +13,62 @@ return function(App $app) {
     $DI = $app->getContainer();
 
 
-    // base auth path
-    // ------------------------------------------------------------
-    $app->get('/', function(Request $req, Response $res) {
-
-        $data = [
-            'message' => 'auth base route!',
-        ];
-
-        return $res->withJson($data);
-    });
-
-
     // LOGIN ROUTE
     // ------------------------------------------------------------
-    $app->post('/login', function(Request $req, Response $res) {
+    $app->post('/login', function(Request $req, Response $res) use ($app, $DI){
+
+        $auth = $DI->get('auth.controller');
+
+        $body = $req->getParsedBody();
 
         $data = [
-            'message' => 'auth login route!',
+            'message'   => 'auth base route!',
+            'req'       => $body,
         ];
 
-        return $res->withJson($data);
+
+        $errors = [
+            0 => [],
+            1 => [],
+            2 => [],
+            3 => [],
+            4 => [],
+        ];
+
+
+        $statusCode = 200;
+
+
+        try {
+            $data['user']       = $auth->login($body['email'], $body['password']);
+            $data['message']    = 'User is logged in';
+        }
+        catch (\Delight\Auth\InvalidEmailException $e) {
+            $data['message']    = IS_DEV ? 'Wrong email' : 'Wrong login credentails';
+            $statusCode = 400;
+        }
+        catch (\Delight\Auth\InvalidPasswordException $e) {
+            $data['message']    = IS_DEV ? 'Wrong password' : 'Wrong login credentails';
+            $statusCode = 400;
+        }
+        catch (\Delight\Auth\EmailNotVerifiedException $e) {
+            $data['message']    = 'Email not verified';
+            $statusCode = 400;
+        }
+        catch (\Delight\Auth\TooManyRequestsException $e) {
+            $data['message']    = 'Too many requests';
+            $statusCode = 400;
+        }
+
+
+        return $res->withJson($data, $statusCode);
     });
+
 
 
     // LOGOUT/SESSION DESTROY
     // ------------------------------------------------------------
-    $app->post('/logout', function(Request $req, Response $res) {
+    $app->post('/logout', function(Request $req, Response $res) use ($DI){
 
         $data = [
             'message' => 'auth logout route!',
@@ -53,7 +82,7 @@ return function(App $app) {
 
     // USER REGISTRATION
     // ------------------------------------------------------------
-    $app->post('/register', function(Request $req, Response $res) {
+    $app->post('/register', function(Request $req, Response $res) use ($DI){
 
         $data = [
             'message' => 'auth register route!',
@@ -65,7 +94,27 @@ return function(App $app) {
 
     // USER CONFIRMATION
     // ------------------------------------------------------------
-    $app->post('/confirmation', function(Request $req, Response $res) {
+    $app->post('/confirmation', function(Request $req, Response $res) use ($DI){
+
+
+        try {
+            $auth->confirmEmail($_GET['selector'], $_GET['token']);
+
+            echo 'Email address has been verified';
+        }
+        catch (\Delight\Auth\InvalidSelectorTokenPairException $e) {
+            die('Invalid token');
+        }
+        catch (\Delight\Auth\TokenExpiredException $e) {
+            die('Token expired');
+        }
+        catch (\Delight\Auth\UserAlreadyExistsException $e) {
+            die('Email address already exists');
+        }
+        catch (\Delight\Auth\TooManyRequestsException $e) {
+            die('Too many requests');
+        }
+
 
         $data = [
             'message' => 'auth confirmation route!',
@@ -77,7 +126,7 @@ return function(App $app) {
 
     // USER DEACTIVATION
     // ------------------------------------------------------------
-    $app->post('/deactivate', function(Request $req, Response $res) {
+    $app->post('/deactivate', function(Request $req, Response $res) use ($DI){
 
         $data = [
             'message' => 'auth deactivation route!',

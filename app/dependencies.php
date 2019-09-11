@@ -1,26 +1,37 @@
 <?php
 
+use Delight\Db;
 use Slim\App;
 use Tuupola\Middleware\JwtAuthentication;
 
 
 return function (App $app) {
+
     $DI = $app->getContainer();
 
+
+    // SETUP CSRF UTILITY
+    // ----------------------------------------------------------------------
 
     $DI['csrf'] = function ($c) {
         return new \Slim\Csrf\Guard;
     };
 
 
-    // // view renderer
+
+    // SETUP UI RENDERER INSTANCE
+    // ----------------------------------------------------------------------
+
     // $DI['renderer'] = function ($c) {
     //     $settings = $c->get('settings')['renderer'];
     //     return new \Slim\Views\PhpRenderer($settings['template_path']);
     // };
 
 
-    // monolog
+
+    // SETUP LOGGER INSTANCE
+    // ----------------------------------------------------------------------
+
     $DI['logger'] = function ($c) {
         $settings = $c->get('settings')['logger'];
         $logger = new \Monolog\Logger($settings['name']);
@@ -30,6 +41,9 @@ return function (App $app) {
     };
 
 
+
+    // SETUP DB CONNECTION
+    // ----------------------------------------------------------------------
 
     $DI['auth_middleware'] = function($c) {
 
@@ -44,13 +58,36 @@ return function (App $app) {
                 $data['message'] = $e['message'];
 
                 return $res->withJson($data, 401);
-                // return $res
-                //     ->withHeader('Content-Type', 'application/json')
-                //     ->getBody()
-                //     ->write(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
             }
         ]);
 
         return $authMiddleware;
     };
+
+
+
+    // SETUP DB CONNECTION
+    // ----------------------------------------------------------------------
+
+    $DB_DATABASE = env('DB_DATABASE', 'sqlite');
+    $DB_PATH     = buildPath(DATA_DIR, env('DB_FILEPATH', ''));
+
+    $db = Db\PdoDatabase::fromDsn(
+        new Db\PdoDsn(
+            "{$DB_DATABASE}:{$DB_PATH}",
+            env('DB_USERNAME', null),
+            env('DB_PASSWORD', null)
+        )
+    );
+
+    $DI['database'] = $db;
+
+
+
+    // SETUP AUTH CONTROLLER
+    // ----------------------------------------------------------------------
+
+    $DI['auth.controller'] = new \Delight\Auth\Auth($db);
+
+
 };

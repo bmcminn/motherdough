@@ -26,38 +26,39 @@ return function(App $app) {
             'req'       => $body,
         ];
 
-
-        $errors = [
-            0 => [],
-            1 => [],
-            2 => [],
-            3 => [],
-            4 => [],
+        // Zero (0) means success, any non-zero exit status is an error
+        $status = [
+            0 => [ 200, 'Login successful' ],
+            1 => [ 400, IS_DEV ? 'Wrong email'      : 'Wrong login credentails' ],
+            2 => [ 400, IS_DEV ? 'Wrong password'   : 'Wrong login credentails' ],
+            3 => [ 401, 'Email not verified' ],
+            4 => [ 429, 'Too many requests' ],
         ];
 
 
-        $statusCode = 200;
-
-
         try {
-            $data['user']       = $auth->login($body['email'], $body['password']);
-            $data['message']    = 'User is logged in';
+            $auth->login($body['email'], $body['password']);
+
+            // TODO: make session.controller to generate auth token and return to user
+
+            $statusCode         = $status[0][0];
+            $data['message']    = $status[0][1];
         }
         catch (\Delight\Auth\InvalidEmailException $e) {
-            $data['message']    = IS_DEV ? 'Wrong email' : 'Wrong login credentails';
-            $statusCode = 400;
+            $statusCode         = $status[1][0];
+            $data['message']    = $status[1][1];
         }
         catch (\Delight\Auth\InvalidPasswordException $e) {
-            $data['message']    = IS_DEV ? 'Wrong password' : 'Wrong login credentails';
-            $statusCode = 400;
+            $statusCode         = $status[2][0];
+            $data['message']    = $status[2][1];
         }
         catch (\Delight\Auth\EmailNotVerifiedException $e) {
-            $data['message']    = 'Email not verified';
-            $statusCode = 400;
+            $statusCode         = $status[3][0];
+            $data['message']    = $status[3][1];
         }
         catch (\Delight\Auth\TooManyRequestsException $e) {
-            $data['message']    = 'Too many requests';
-            $statusCode = 400;
+            $statusCode         = $status[4][0];
+            $data['message']    = $status[4][1];
         }
 
 
@@ -84,9 +85,61 @@ return function(App $app) {
     // ------------------------------------------------------------
     $app->post('/register', function(Request $req, Response $res) use ($DI){
 
+        $auth = $DI->get('auth.controller');
+
+        $body = $req->getParsedBody();
+
         $data = [
-            'message' => 'auth register route!',
+            'message'   => 'auth base route!',
+            'req'       => $body,
         ];
+
+        // Zero (0) means success, any non-zero exit status is an error
+        $status = [
+            0 => [ 200, 'User registration was successful' ],
+            1 => [ 400, 'Provided email was invalid' ],
+            2 => [ 400, 'Provided password was invalid' ],
+            3 => [ 409, 'That username is already taken' ],
+            4 => [ 429, 'Too many requests' ],
+        ];
+
+
+
+        // if (env('AUTH_FORCE_EMAIL_CONFIRMATION', false)) {
+        //     $emailConfirmation = function ($selector, $token) {
+        //         echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email)';
+        //     }
+        // }
+
+
+        try {
+            $data['userId'] = $auth->register(
+                $body['email'],
+                $body['password'],
+                $body['username'],
+                // fourth argument is a callback to send registratino confirmation email
+            );
+
+            $statusCode         = $status[0][0];
+            $data['message']    = $status[0][1];
+        }
+        catch (\Delight\Auth\InvalidEmailException $e) {
+            $statusCode         = $status[1][0];
+            $data['message']    = $status[1][1];
+        }
+        catch (\Delight\Auth\InvalidPasswordException $e) {
+            $statusCode         = $status[2][0];
+            $data['message']    = $status[2][1];
+        }
+        catch (\Delight\Auth\UserAlreadyExistsException $e) {
+            $statusCode         = $status[3][0];
+            $data['message']    = $status[3][1];
+        }
+        catch (\Delight\Auth\TooManyRequestsException $e) {
+            $statusCode         = $status[4][0];
+            $data['message']    = $status[4][1];
+        }
+
 
         return $res->withJson($data);
     });

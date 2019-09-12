@@ -36,7 +36,7 @@ return function (App $app) {
         $settings = $c->get('settings')['logger'];
         $logger = new \Monolog\Logger($settings['name']);
         $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
-        $logger->pushHandler(new \Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
+        $logger->pushHandler(new \Monolog\Handler\RotatingFileHandler($settings['path'], env('LOGGER_MAX_FILES', 0), $settings['level']));
         return $logger;
     };
 
@@ -51,7 +51,7 @@ return function (App $app) {
             'secure'    => IS_PROD,
             'logger'    => $c->get('logger'),
             'path'      => '/api',
-            'secret'    => env('APP_JWT_SECRET', 'ITS A SECRET TO EVERYBODY.'),
+            'secret'    => env('JWT_SECRET'),
             'error' => function ($res, $e) {
                 $data = [];
                 $data['status']  = 'error';

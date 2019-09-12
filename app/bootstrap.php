@@ -12,6 +12,7 @@ define('ROUTES_DIR', buildPath(ROOT_DIR, '/src/routes'));
 define('MIDDLEWARE_DIR', buildPath(ROOT_DIR, '/src/middleware'));
 
 
+
 // DEV LOAD ENVIRONMENT
 // ----------------------------------------------------------------------
 
@@ -21,10 +22,14 @@ $dotenv->overload();
 
 $dotenv->required([
     'APP_ENV',
+    'APP_HOSTNAME',
     'APP_TIMEZONE',
     'APP_TITLE',
     'DB_DATABASE',
     'DB_HOSTNAME',
+    'JWT_ALGO',
+    'JWT_SECRET',
+    'JWT_SECRET',
 ]);
 
 

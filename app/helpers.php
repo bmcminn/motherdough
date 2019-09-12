@@ -1,15 +1,18 @@
 <?php
 
+use \Firebase\JWT\JWT;
+
+
 
 //  TIME HELPER FUNCITON(S)
 // ===================================
 
-function minutes(int $n=1)  :int { return $n * 60; }
-function hours(int $n=1)    :int { return $n * 60 * $minutes; }
-function days(int $n=1)     :int { return $n * 24 * $hours; }
-function weeks(int $n=1)    :int { return $n * 7 * $days; }
-function months(int $n=1)   :int { return $n * 30 * $days; }
-function years(int $n=1)    :int { return $n * 365 * $days; }
+function minutes(int $n=1)  :int { return $n *  60; }
+function hours(int $n=1)    :int { return $n *  60 * minutes(); }
+function days(int $n=1)     :int { return $n *  24 * hours(); }
+function weeks(int $n=1)    :int { return $n *   7 * days(); }
+function months(int $n=1)   :int { return $n *  30 * days(); }
+function years(int $n=1)    :int { return $n * 365 * days(); }
 
 function toMicrotime(int $time) :int {
     return $time * 1000;
@@ -66,54 +69,21 @@ function env($key, $default=null) {
 //  UTILITY HELPER FUNCITON(S)
 // ===================================
 
-/**
- * [logger description]
- * @param  string $logType [description]
- * @param  array  $args    [description]
- * @return [type]          [description]
- */
-function logger(string $logType='INFO', int $weight, array $args = []) {
+function generateToken(array $subject=[], array $roles=[], int $nbf=0) {
+    $secret = env('JWT_SECRET');
 
-    $logDate    = date('Y-m-d');
-    $logPath    = ROOT_DIR . '/logs/' . "{$logDate}.log";
-    $timestamp  = date('Y-m-d H:i:s');
+    $token = [];
 
-    $msg = [
-        "[$timestamp]",
-        ':',
-        "[$logType]",
-    ];
+    $now = time();
 
-    foreach ($args as $key => $value) {
-        $part = '';
-        $type = gettype($value);
+    $token['iss'] = env('APP_HOSTNAME');
+    $token['exp'] = $now + hours(env('JWT_TTL', 24));
+    $token['iat'] = $now;
+    $token['nbf'] = $now + $nbf;
+    $token['sub'] = $subject;
+    $token['scope'] = $roles;
 
-        switch($type) {
-            case 'object':
-            case 'array':
-                $part = 'JSON ' . json_encode($value);
-                break;
-            default:
-                $part = (string) $value;
-                break;
-        }
+    $encoding = explode('|', env('JWT_ALGO'));
 
-        array_push($msg, $part);
-    }
-
-    array_push($msg, PHP_EOL);
-
-    $msg = implode(' ', $msg);
-
-    return $msg;
+    return JWT::encode($token, $secret, $encoding[0]);
 }
-
-
-function log_debug()     { echo logger('DEBUG',     100,  func_get_args()); }
-function log_info()      { echo logger('INFO',      200,  func_get_args()); }
-function log_notice()    { echo logger('NOTICE',    250,  func_get_args()); }
-function log_warning()   { echo logger('WARNING',   300,  func_get_args()); }
-function log_error()     { echo logger('ERROR',     400,  func_get_args()); }
-function log_critical()  { echo logger('CRITICAL',  500,  func_get_args()); }
-function log_alert()     { echo logger('ALERT',     550,  func_get_args()); }
-function log_emergency() { echo logger('EMERGENCY', 600,  func_get_args()); }

@@ -13,7 +13,7 @@ return [
         // Monolog settings
         'logger' => [
             'name'  => env('LOGGER_NAME'),
-            'path'  => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
+            'path'  => isset($_ENV['docker']) ? 'php://stdout' : ROOT_DIR . '/logs/app.log',
             'level' => Logger::DEBUG,
         ],
     ],

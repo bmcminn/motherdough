@@ -1,10 +1,23 @@
-.idea/
-/coverage/
-/vendor/
-/logs/*
-!/logs/README.md
-/var/cache/*
-__*
-*.db
+; ENVIRONMENT CONFIGS
 .env*
 !.env.example
+
+
+; GENERIC FILE EXTENSIONS
+*.db
+*.sublime-workspace
+
+
+; DIRECTORIES
+.idea/
+/coverage/
+
+/logs/*
+!/logs/README.md
+
+/var/cache/*
+/vendor/
+
+
+; ALIAS TO IGNORE SPECIFIC FILES/FOLDERS
+__*

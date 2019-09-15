@@ -1,20 +1,21 @@
 <?php
+declare(strict_types=1);
 
 
+use DI\ContainerBuilder;
 use Monolog\Logger;
 
 
-return [
-    'settings' => [
-        'addContentLengthHeader'    => false, // Allow the web server to send the content-length header
-
-        'displayErrorDetails'       => IS_DEV, // set to false in production
-
-        // Monolog settings
-        'logger' => [
-            'name'  => env('LOGGER_NAME'),
-            'path'  => isset($_ENV['docker']) ? 'php://stdout' : ROOT_DIR . '/logs/app.log',
-            'level' => Logger::DEBUG,
+return function (ContainerBuilder $containerBuilder) {
+    // Global Settings Object
+    $containerBuilder->addDefinitions([
+        'settings' => [
+            'displayErrorDetails' => IS_DEV, // Should be set to false in production
+            'logger' => [
+                'name'  => 'api',
+                'path'  => env('docker', false) ? 'php://stdout' : ROOT_DIR . '/logs/app.log',
+                'level' => Logger::DEBUG,
+            ],
         ],
-    ],
-];
+    ]);
+};

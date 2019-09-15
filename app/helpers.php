@@ -1,7 +1,8 @@
 <?php
+declare(strict_types=1);
+
 
 use \Firebase\JWT\JWT;
-
 
 
 //  TIME HELPER FUNCITON(S)
@@ -14,9 +15,11 @@ function weeks(int $n=1)    :int { return $n *   7 * days(); }
 function months(int $n=1)   :int { return $n *  30 * days(); }
 function years(int $n=1)    :int { return $n * 365 * days(); }
 
+
 function toMicrotime(int $time) :int {
     return $time * 1000;
 }
+
 
 function fromMicrotime(int $timestamp) :int {
     return floor($time / 1000);
@@ -83,7 +86,7 @@ function generateToken(array $subject=[], array $roles=[], int $nbf=0) {
     $token['sub'] = $subject;
     $token['scope'] = $roles;
 
-    $encoding = explode('|', env('JWT_ALGO'));
+    $encoding = explode('|', env('JWT_ALGORITHM'));
 
     return JWT::encode($token, $secret, $encoding[0]);
 }

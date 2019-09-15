@@ -1,93 +1,65 @@
 <?php
+declare(strict_types=1);
+
 
 use Delight\Db;
-use Slim\App;
+use DI\ContainerBuilder;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Monolog\Processor\UidProcessor;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Tuupola\Middleware\JwtAuthentication;
 
 
-return function (App $app) {
+return function (ContainerBuilder $containerBuilder) {
+    $containerBuilder->addDefinitions([
 
-    $DI = $app->getContainer();
+        'logger' => function (ContainerInterface $c) {
+            $settings = $c->get('settings');
 
+            $loggerSettings = $settings['logger'];
+            $logger = new Logger($loggerSettings['name']);
 
-    // SETUP CSRF UTILITY
-    // ----------------------------------------------------------------------
+            $processor = new UidProcessor();
+            $logger->pushProcessor($processor);
 
-    $DI['csrf'] = function ($c) {
-        return new \Slim\Csrf\Guard;
-    };
+            $handler = new StreamHandler($loggerSettings['path'], $loggerSettings['level']);
+            $handler = new RotatingFileHandler($loggerSettings['path'], intval(env('LOGGER_MAX_FILES', 0)), $loggerSettings['level']);
+            $logger->pushHandler($handler);
 
-
-
-    // SETUP UI RENDERER INSTANCE
-    // ----------------------------------------------------------------------
-
-    // $DI['renderer'] = function ($c) {
-    //     $settings = $c->get('settings')['renderer'];
-    //     return new \Slim\Views\PhpRenderer($settings['template_path']);
-    // };
+            return $logger;
+        },
 
 
-
-    // SETUP LOGGER INSTANCE
-    // ----------------------------------------------------------------------
-
-    $DI['logger'] = function ($c) {
-        $settings = $c->get('settings')['logger'];
-        $logger = new \Monolog\Logger($settings['name']);
-        $logger->pushProcessor(new \Monolog\Processor\UidProcessor());
-        $logger->pushHandler(new \Monolog\Handler\RotatingFileHandler($settings['path'], env('LOGGER_MAX_FILES', 0), $settings['level']));
-        return $logger;
-    };
+        'csrf' => function (ContainerInterface $c) {
+            return new \Slim\Csrf\Guard;
+        },
 
 
+        'database' => function (ContainerInterface $c) {
+            $DB_DATABASE = env('DB_DATABASE', 'sqlite');
+            $DB_PATH     = buildPath(DATA_DIR, env('DB_FILEPATH', ''));
 
-    // SETUP DB CONNECTION
-    // ----------------------------------------------------------------------
+            $db = Db\PdoDatabase::fromDsn(
+                new Db\PdoDsn(
+                    "{$DB_DATABASE}:{$DB_PATH}",
+                    env('DB_USERNAME', null),
+                    env('DB_PASSWORD', null)
+                )
+            );
 
-    $DI['auth_middleware'] = function($c) {
-
-        $authMiddleware = new JwtAuthentication([
-            'secure'    => IS_PROD,
-            'logger'    => $c->get('logger'),
-            'path'      => '/api',
-            'secret'    => env('JWT_SECRET'),
-            'error' => function ($res, $e) {
-                $data = [];
-                $data['status']  = 'error';
-                $data['message'] = $e['message'];
-
-                return $res->withJson($data, 401);
-            }
-        ]);
-
-        return $authMiddleware;
-    };
+            return $db;
+        },
 
 
+        'auth.controller' => function (ContainerInterface $c) {
+            $db = $c->get('database');
+            new \Delight\Auth\Auth($db);
+        },
 
-    // SETUP DB CONNECTION
-    // ----------------------------------------------------------------------
-
-    $DB_DATABASE = env('DB_DATABASE', 'sqlite');
-    $DB_PATH     = buildPath(DATA_DIR, env('DB_FILEPATH', ''));
-
-    $db = Db\PdoDatabase::fromDsn(
-        new Db\PdoDsn(
-            "{$DB_DATABASE}:{$DB_PATH}",
-            env('DB_USERNAME', null),
-            env('DB_PASSWORD', null)
-        )
-    );
-
-    $DI['database'] = $db;
-
-
-
-    // SETUP AUTH CONTROLLER
-    // ----------------------------------------------------------------------
-
-    $DI['auth.controller'] = new \Delight\Auth\Auth($db);
+    ]);
 
 
 };

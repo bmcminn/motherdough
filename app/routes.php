@@ -1,32 +1,34 @@
 <?php
+declare(strict_types=1);
 
+
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 
 return function (App $app) {
 
-    $DI = $app->getContainer();
+    $app->get('/[{name}]', function (Request $req, Response $res) {
+        // Sample log message
+        $logger = $this->get('logger');
+        $logger->info("Slim-Skeleton '/' route");
+
+        // Render index view
+        return $response->write('hello');
+    });
 
 
-    $app->get('/[{name}]',
-        function (Request $request, Response $response, array $args)
-        use ($DI) {
-            // Sample log message
-            $DI->get('logger')->info("Slim-Skeleton '/' route");
-
-            // Render index view
-            return $response->write('hello');
-        });
+    $app->group('/auth', function (Group $group) {
+        $group->get('', ListUsersAction::class);
+        $group->get('/{id}', ViewUserAction::class);
+    });
 
 
-    $authRoutes = require ROUTES_DIR . '/auth.php';
-    $app->group('/auth', $authRoutes);
-
-
-    $apiRoutes = require ROUTES_DIR . '/api.php';
-    $app->group('/api', $apiRoutes);
-
+    $app->group('/api', function (Group $group) {
+        $group->get('', ListUsersAction::class);
+        $group->get('/{id}', ViewUserAction::class);
+    });
 
 };

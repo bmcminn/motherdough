@@ -1,15 +1,22 @@
 <?php
-
-use Delight\Db;
+declare(strict_types=1);
 
 
 // SETUP PATH ALIASES
 // ----------------------------------------------------------------------
 
-define('ROOT_DIR', buildPath(getcwd(), ''));
+define('ROOT_DIR', buildPath(getcwd(), '/..'));
 define('DATA_DIR', buildPath(ROOT_DIR, '/data'));
 define('ROUTES_DIR', buildPath(ROOT_DIR, '/src/routes'));
 define('MIDDLEWARE_DIR', buildPath(ROOT_DIR, '/src/middleware'));
+
+
+// TODO: finish mapping these macro path helpers
+function root_path($filepath)   { return buildPath(ROOT_DIR, $filepath); }
+function logs_path($filepath)   { return buildPath(ROOT_DIR, '/logs', $filepath); }
+function data_path($filepath)   { return buildPath(ROOT_DIR, '/data', $filepath); }
+function public_path($filepath) { return buildPath(ROOT_DIR, '/public', $filepath); }
+function storage_path($filepath) { return buildPath(ROOT_DIR, '/public', $filepath); }
 
 
 
@@ -27,7 +34,7 @@ $dotenv->required([
     'APP_TITLE',
     'DB_DATABASE',
     'DB_HOSTNAME',
-    'JWT_ALGO',
+    'JWT_ALGORITHM',
     'JWT_SECRET',
     'JWT_SECRET',
 ]);

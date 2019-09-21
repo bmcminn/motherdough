@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\AuthController;
+use App\Middleware\ValidationMiddleware;
 use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -13,6 +14,7 @@ return function(App $app) {
     // TODO: implement DelightIM\Auth: https://github.com/delight-im/PHP-Auth#email-verification
 
     $app->post('/login',        AuthController::class . ':login')
+        ->add(ValidationMiddleware::class . ':login')
         ->setName('auth_login')
         ;
 

@@ -38,11 +38,5 @@ $routes = require ROOT_DIR . '/app/routes.php';
 $routes($app);
 
 
-// RUN ME LAST IN DEV
-if (IS_DEV) {
-    $app->add(\App\Middleware\DebugMiddleware::class);
-}
-
-
 // Run app
 $app->run();

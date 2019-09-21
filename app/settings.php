@@ -6,6 +6,10 @@ use Monolog\Logger;
 
 return [
     'settings' => [
+
+        'isProduction'      => IS_PROD,
+        'isDev'             => IS_DEV,
+
         'addContentLengthHeader'    => false, // Allow the web server to send the content-length header
 
         'displayErrorDetails'       => IS_DEV, // set to false in production

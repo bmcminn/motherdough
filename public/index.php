@@ -1,6 +1,8 @@
 <?php
 
 use Slim\App;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 
 if (PHP_SAPI == 'cli-server') {
@@ -14,9 +16,6 @@ if (PHP_SAPI == 'cli-server') {
 }
 
 require __DIR__ . '/../vendor/autoload.php';
-
-
-session_start();
 
 
 // Instantiate the app
@@ -37,6 +36,12 @@ $middleware($app);
 // Register routes
 $routes = require ROOT_DIR . '/app/routes.php';
 $routes($app);
+
+
+// RUN ME LAST IN DEV
+if (IS_DEV) {
+    $app->add(\App\Middleware\DebugMiddleware::class);
+}
 
 
 // Run app

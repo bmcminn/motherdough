@@ -83,7 +83,7 @@ function generateToken(array $subject=[], array $roles=[], int $nbf=0) {
     $token['sub'] = $subject;
     $token['scope'] = $roles;
 
-    $encoding = explode('|', env('JWT_ALGO'));
+    $encoding = explode('|', env('JWT_ALGORITHM'));
 
     return JWT::encode($token, $secret, $encoding[0]);
 }

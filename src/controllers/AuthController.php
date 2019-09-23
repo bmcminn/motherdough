@@ -13,6 +13,24 @@ class AuthController extends BaseController {
     // TODO: fully implement changeEmail
     public function changeEmail(Request $req, Response $res) {
 
+        $data = [];
+
+        $body   = $req->getParsedBody();
+
+        $data['message'] = 'auth base route!';
+
+
+        // Zero (0) means success, any non-zero exit status is an error
+        $status = [
+            0 => [ 200, 'Password has been changed' ],
+            1 => [ 400, 'Invalid email address' ],
+            2 => [ 400, 'Email address already exists' ],
+            3 => [ 429, 'Account not verified' ],
+            3 => [ 429, 'Not logged in' ],
+            3 => [ 429, 'Too many requests' ],
+        ];
+
+
         try {
             if ($this->auth->reconfirmPassword($_POST['password'])) {
                 $this->auth->changeEmail($_POST['newEmail'], function ($selector, $token) {
@@ -24,21 +42,34 @@ class AuthController extends BaseController {
             else {
                 echo 'We can\'t say if the user is who they claim to be';
             }
+
+            $statusCode         = $status[1][0];
+            $data['message']    = $status[1][1];
         }
-        catch (\Delight\Auth\InvalidEmailException $e) {
+        catch (Auth\InvalidEmailException $e) {
             die('Invalid email address');
+            $statusCode         = $status[1][0];
+            $data['message']    = $status[1][1];
         }
-        catch (\Delight\Auth\UserAlreadyExistsException $e) {
+        catch (Auth\UserAlreadyExistsException $e) {
             die('Email address already exists');
+            $statusCode         = $status[2][0];
+            $data['message']    = $status[2][1];
         }
-        catch (\Delight\Auth\EmailNotVerifiedException $e) {
+        catch (Auth\EmailNotVerifiedException $e) {
             die('Account not verified');
+            $statusCode         = $status[3][0];
+            $data['message']    = $status[3][1];
         }
-        catch (\Delight\Auth\NotLoggedInException $e) {
+        catch (Auth\NotLoggedInException $e) {
             die('Not logged in');
+            $statusCode         = $status[4][0];
+            $data['message']    = $status[4][1];
         }
-        catch (\Delight\Auth\TooManyRequestsException $e) {
+        catch (Auth\TooManyRequestsException $e) {
             die('Too many requests');
+            $statusCode         = $status[5][0];
+            $data['message']    = $status[5][1];
         }
 
         return $res->withJson($data);
@@ -47,19 +78,44 @@ class AuthController extends BaseController {
 
     // TODO: fully implement changePassword
     public function changePassword(Request $req, Response $res) {
+
+        $data = [];
+
+        $body   = $req->getParsedBody();
+
+        $data['message'] = 'auth base route!';
+
+
+        // Zero (0) means success, any non-zero exit status is an error
+        $status = [
+            0 => [ 200, 'Password has been changed' ],
+            1 => [ 400, 'Not logged in' ],
+            2 => [ 400, 'Invalid password(s)' ],
+            3 => [ 429, 'Too many requests' ],
+        ];
+
+
+
         try {
             $this->auth->changePassword($_POST['oldPassword'], $_POST['newPassword']);
 
-            echo 'Password has been changed';
+            $statusCode         = $status[0][0];
+            $data['message']    = $status[0][1];
         }
-        catch (\Delight\Auth\NotLoggedInException $e) {
-            die('Not logged in');
+        catch (Auth\NotLoggedInException $e) {
+            // die('Not logged in');
+            $statusCode         = $status[1][0];
+            $data['message']    = $status[1][1];
         }
-        catch (\Delight\Auth\InvalidPasswordException $e) {
-            die('Invalid password(s)');
+        catch (Auth\InvalidPasswordException $e) {
+            // die('Invalid password(s)');
+            $statusCode         = $status[2][0];
+            $data['message']    = $status[2][1];
         }
-        catch (\Delight\Auth\TooManyRequestsException $e) {
-            die('Too many requests');
+        catch (Auth\TooManyRequestsException $e) {
+            // die('Too many requests');
+            $statusCode         = $status[3][0];
+            $data['message']    = $status[3][1];
         }
 
         return $res->withJson($data);
@@ -69,32 +125,49 @@ class AuthController extends BaseController {
     // TODO: fully implement account confirmation
     public function confirmation(Request $req, Response $res) {
 
+        $data = [];
+
+        $body   = $req->getParsedBody();
+
+        $data['message'] = 'auth base route!';
+
+
+        // Zero (0) means success, any non-zero exit status is an error
+        $status = [
+            0 => [ 200, 'Request has been generated' ],
+            1 => [ 400, 'Invalid token' ],
+            2 => [ 400, 'Token expired' ],
+            3 => [ 401, 'Email address already exists' ],
+            4 => [ 429, 'Too many requests' ],
+        ];
+
+
         try {
             $this->auth->confirmEmail($_GET['selector'], $_GET['token']);
 
-            echo 'Email address has been verified';
+            $statusCode         = $status[0][0];
+            $data['message']    = $status[0][1];
         }
-
         catch (Auth\InvalidSelectorTokenPairException $e) {
-            die('Invalid token');
+            // die('Invalid token');
+            $statusCode         = $status[1][0];
+            $data['message']    = $status[1][1];
         }
-
         catch (Auth\TokenExpiredException $e) {
-            die('Token expired');
+            // die('Token expired');
+            $statusCode         = $status[2][0];
+            $data['message']    = $status[2][1];
         }
-
         catch (Auth\UserAlreadyExistsException $e) {
-            die('Email address already exists');
+            // die('Email address already exists');
+            $statusCode         = $status[3][0];
+            $data['message']    = $status[3][1];
         }
-
         catch (Auth\TooManyRequestsException $e) {
-            die('Too many requests');
+            // die('Too many requests');
+            $statusCode         = $status[4][0];
+            $data['message']    = $status[4][1];
         }
-
-
-        $data = [
-            'message' => 'auth confirmation route!',
-        ];
 
         return $res->withJson($data);
     }
@@ -114,24 +187,50 @@ class AuthController extends BaseController {
     // TODO: fully integrate forgotPassword
     public function forgotPassword(Request $req, Response $res) {
 
+        $data = [];
+
+        $body   = $req->getParsedBody();
+
+        $data['message'] = 'auth base route!';
+
+
+        // Zero (0) means success, any non-zero exit status is an error
+        $status = [
+            0 => [ 200, 'Request has been generated' ],
+            1 => [ 400, 'Invalid email address' ],
+            2 => [ 400, 'Email not verified' ],
+            3 => [ 401, 'Password reset is disabled' ],
+            4 => [ 429, 'Too many requests' ],
+        ];
+
+
         try {
             $this->auth->forgotPassword($_POST['email'], function ($selector, $token) {
                 echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email)';
             });
 
-            echo 'Request has been generated';
+            $statusCode         = $status[0][0];
+            $data['message']    = $status[0][1];
         }
         catch (Auth\InvalidEmailException $e) {
-            die('Invalid email address');
+            // die('Invalid email address');
+            $statusCode         = $status[1][0];
+            $data['message']    = $status[1][1];
         }
         catch (Auth\EmailNotVerifiedException $e) {
-            die('Email not verified');
+            // die('Email not verified');
+            $statusCode         = $status[2][0];
+            $data['message']    = $status[2][1];
         }
         catch (Auth\ResetDisabledException $e) {
-            die('Password reset is disabled');
+            // die('Password reset is disabled');
+            $statusCode         = $status[3][0];
+            $data['message']    = $status[3][1];
         }
         catch (Auth\TooManyRequestsException $e) {
-            die('Too many requests');
+            // die('Too many requests');
+            $statusCode         = $status[4][0];
+            $data['message']    = $status[4][1];
         }
 
         $data = [
@@ -140,6 +239,7 @@ class AuthController extends BaseController {
 
         return $res->withJson($data);
     }
+
 
 
     /**
@@ -188,7 +288,6 @@ class AuthController extends BaseController {
             $statusCode         = $status[0][0];
             $data['message']    = $status[0][1];
         }
-
         catch (Auth\InvalidEmailException $e) {
             $statusCode         = $status[1][0];
             $data['message']    = $status[1][1];
@@ -198,17 +297,14 @@ class AuthController extends BaseController {
                 'userId'    => $this->auth->getUserId(),
             ]);
         }
-
         catch (Auth\InvalidPasswordException $e) {
             $statusCode         = $status[2][0];
             $data['message']    = $status[2][1];
         }
-
         catch (Auth\EmailNotVerifiedException $e) {
             $statusCode         = $status[3][0];
             $data['message']    = $status[3][1];
         }
-
         catch (Auth\TooManyRequestsException $e) {
             $statusCode         = $status[4][0];
             $data['message']    = $status[4][1];
@@ -218,6 +314,7 @@ class AuthController extends BaseController {
     }
 
 
+
     /**
      * @param  Request
      * @param  Response
@@ -225,17 +322,34 @@ class AuthController extends BaseController {
      */
     public function logout(Request $req, Response $res) {
 
+        $data = [];
+
+        $body   = $req->getParsedBody();
+
+        $data['message'] = 'auth base route!';
+
+
+        // Zero (0) means success, any non-zero exit status is an error
+        $status = [
+            0 => [ 200, 'Login successful' ],
+            1 => [ 400, 'Wrong login credentails', 'Wrong email' ],
+        ];
+
+
         try {
             $this->auth->logOutEverywhere();
             $this->auth->destroySession();
+            session_destroy();
         }
-        catch (\Delight\Auth\NotLoggedInException $e) {
+        catch (Auth\NotLoggedInException $e) {
             die('Not logged in');
+            $statusCode         = $status[1][0];
+            $data['message']    = $status[1][1];
         }
-        session_destroy();
 
         return $res->withJson($data);
     }
+
 
 
     /**
@@ -280,31 +394,26 @@ class AuthController extends BaseController {
             $statusCode         = $status[0][0];
             $data['message']    = $status[0][1];
         }
-
         catch (Auth\InvalidEmailException $e) {
             $statusCode         = $status[1][0];
             $data['message']    = $status[1][1];
             $data['success']    = false;
         }
-
         catch (Auth\InvalidPasswordException $e) {
             $statusCode         = $status[2][0];
             $data['message']    = $status[2][1];
             $data['success']    = false;
         }
-
         catch (Auth\UserAlreadyExistsException $e) {
             $statusCode         = $status[3][0];
             $data['message']    = $status[3][1];
             $data['success']    = false;
         }
-
         catch (Auth\TooManyRequestsException $e) {
             $statusCode         = $status[4][0];
             $data['message']    = $status[4][1];
             $data['success']    = false;
         }
-
 
         return $res->withJson($data);
     }
@@ -312,27 +421,64 @@ class AuthController extends BaseController {
 
     // TODO: fully integrate resetPassword
     public function resetPassword(Request $req, Response $res) {
+
+        $body = $req->getParsedBody();
+
+        $data = [];
+        $data['message'] = 'auth base route!';
+        $data['success'] = true;
+
+
+        // Zero (0) means success, any non-zero exit status is an error
+        $status = [
+            0 => [ 200, 'Password has been reset' ],
+            1 => [ 400, 'Invalid token' ],
+            2 => [ 401, 'Token expired' ],
+            3 => [ 403, 'Password reset is disabled' ],
+            4 => [ 400, 'Invalid password' ],
+            5 => [ 429, 'Too many requests' ],
+        ];
+
+
+
+
         try {
             $this->auth->resetPassword($_POST['selector'], $_POST['token'], $_POST['password']);
 
-            echo 'Password has been reset';
-        }
-        catch (\Delight\Auth\InvalidSelectorTokenPairException $e) {
-            die('Invalid token');
-        }
-        catch (\Delight\Auth\TokenExpiredException $e) {
-            die('Token expired');
-        }
-        catch (\Delight\Auth\ResetDisabledException $e) {
-            die('Password reset is disabled');
-        }
-        catch (\Delight\Auth\InvalidPasswordException $e) {
-            die('Invalid password');
-        }
-        catch (\Delight\Auth\TooManyRequestsException $e) {
-            die('Too many requests');
-        }
+            $statusCode         = $status[0][0];
+            $data['message']    = $status[0][1];
 
+        }
+        catch (Auth\InvalidSelectorTokenPairException $e) {
+            // die('Invalid token');
+            $statusCode         = $status[1][0];
+            $data['message']    = $status[1][1];
+            $data['success']    = false;
+        }
+        catch (Auth\TokenExpiredException $e) {
+            // die('Token expired');
+            $statusCode         = $status[2][0];
+            $data['message']    = $status[2][1];
+            $data['success']    = false;
+        }
+        catch (Auth\ResetDisabledException $e) {
+            // die('Password reset is disabled');
+            $statusCode         = $status[3][0];
+            $data['message']    = $status[3][1];
+            $data['success']    = false;
+        }
+        catch (Auth\InvalidPasswordException $e) {
+            // die('Invalid password');
+            $statusCode         = $status[4][0];
+            $data['message']    = $status[4][1];
+            $data['success']    = false;
+        }
+        catch (Auth\TooManyRequestsException $e) {
+            // die('Too many requests');
+            $statusCode         = $status[5][0];
+            $data['message']    = $status[5][1];
+            $data['success']    = false;
+        }
 
         return $res->withJson($data);
     }
@@ -341,18 +487,40 @@ class AuthController extends BaseController {
     // TODO: fully integrate resendConfirmation
     public function resendConfirmation(Request $req, Response $res) {
 
+        $body = $req->getParsedBody();
+
+        $data = [];
+        $data['message'] = '';
+        $data['success'] = true;
+
+
+        // Zero (0) means success, any non-zero exit status is an error
+        $status = [
+            0 => [ 200, 'The user may now respond to the confirmation request (usually by clicking a link)' ],
+            1 => [ 404, 'No earlier request found that could be re-sent' ],
+            2 => [ 429, 'There have been too many requests -- try again later' ],
+        ];
+
+
         try {
             $this->auth->resendConfirmationForEmail($_POST['email'], function ($selector, $token) {
                 echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email)';
             });
 
-            echo 'The user may now respond to the confirmation request (usually by clicking a link)';
+            $statusCode         = $status[0][0];
+            $data['message']    = $status[0][1];
         }
-        catch (\Delight\Auth\ConfirmationRequestNotFound $e) {
-            die('No earlier request found that could be re-sent');
+        catch (Auth\ConfirmationRequestNotFound $e) {
+            // die('No earlier request found that could be re-sent');
+            $statusCode         = $status[1][0];
+            $data['message']    = $status[1][1];
+            $data['success']    = false;
         }
-        catch (\Delight\Auth\TooManyRequestsException $e) {
-            die('There have been too many requests -- try again later');
+        catch (Auth\TooManyRequestsException $e) {
+            // die('There have been too many requests -- try again later');
+            $statusCode         = $status[2][0];
+            $data['message']    = $status[2][1];
+            $data['success']    = false;
         }
 
         return $res->withJson($data);
@@ -361,27 +529,54 @@ class AuthController extends BaseController {
 
     // TODO: fully integrate verifyPasswordReset
     public function verifyPasswordReset(Request $req, Response $res) {
+
+        $body = $req->getParsedBody();
+
+        $data = [];
+        $data['message'] = '';
+        $data['success'] = true;
+
+
+        // Zero (0) means success, any non-zero exit status is an error
+        $status = [
+            0 => [ 200, 'Please enter your new password' ],
+            1 => [ 404, 'Invalid token' ],
+            2 => [ 429, 'Token expired' ],
+            3 => [ 403, 'Password reset is disabled' ],
+            4 => [ 429, 'Too many requests' ],
+        ];
+
+
         try {
             $this->auth->canResetPasswordOrThrow($_GET['selector'], $_GET['token']);
 
-            echo 'Put the selector into a "hidden" field (or keep it in the URL)';
-            echo 'Put the token into a "hidden" field (or keep it in the URL)';
-
-            echo 'Ask the user for their new password';
+            $statusCode         = $status[0][0];
+            $data['message']    = $status[0][1];
         }
         catch (Auth\InvalidSelectorTokenPairException $e) {
             die('Invalid token');
+            $statusCode         = $status[1][0];
+            $data['message']    = $status[1][1];
+            $data['success']    = false;
         }
         catch (Auth\TokenExpiredException $e) {
             die('Token expired');
+            $statusCode         = $status[2][0];
+            $data['message']    = $status[2][1];
+            $data['success']    = false;
         }
         catch (Auth\ResetDisabledException $e) {
             die('Password reset is disabled');
+            $statusCode         = $status[3][0];
+            $data['message']    = $status[3][1];
+            $data['success']    = false;
         }
         catch (Auth\TooManyRequestsException $e) {
             die('Too many requests');
+            $statusCode         = $status[4][0];
+            $data['message']    = $status[4][1];
+            $data['success']    = false;
         }
-
 
         return $res->withJson($data);
     }

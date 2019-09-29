@@ -8,3 +8,4 @@ __*
 *.db
 .env*
 !.env.example
+*.sublime-workspace

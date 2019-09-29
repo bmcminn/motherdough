@@ -27,7 +27,7 @@ $dotenv->required([
     'APP_TITLE',
     'DB_DATABASE',
     'DB_HOSTNAME',
-    'JWT_ALGO',
+    'JWT_ALGORITHM',
     'JWT_SECRET',
     'JWT_SECRET',
 ]);

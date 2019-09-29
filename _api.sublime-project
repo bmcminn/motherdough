@@ -4,13 +4,14 @@
 		{
 			"path": ".",
             "file_exclude_patterns": [
+                "*.db",
+                "*.lock",
                 "*.sublime-workspace",
                 ".coveralls*",
                 ".editorconfig",
                 ".travis*",
                 "docker*",
-                "*.lock",
-                "*.db",
+                "phpunit*",
             ],
             "folder_exclude_patterns": [
                 "vendor",

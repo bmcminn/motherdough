@@ -1,6 +1,8 @@
 <?php
 
 use Slim\App;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 
 if (PHP_SAPI == 'cli-server') {
@@ -14,9 +16,6 @@ if (PHP_SAPI == 'cli-server') {
 }
 
 require __DIR__ . '/../vendor/autoload.php';
-
-
-session_start();
 
 
 // Instantiate the app

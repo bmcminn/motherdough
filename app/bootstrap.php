@@ -6,10 +6,10 @@ use Delight\Db;
 // SETUP PATH ALIASES
 // ----------------------------------------------------------------------
 
-define('ROOT_DIR', buildPath(getcwd(), ''));
-define('DATA_DIR', buildPath(ROOT_DIR, '/data'));
-define('ROUTES_DIR', buildPath(ROOT_DIR, '/src/routes'));
-define('MIDDLEWARE_DIR', buildPath(ROOT_DIR, '/src/middleware'));
+define('ROOT_DIR',          buildPath(getcwd(), ''));
+define('DATA_DIR',          buildPath(ROOT_DIR, '/data'));
+define('ROUTES_DIR',        buildPath(ROOT_DIR, '/src/routes'));
+define('MIDDLEWARE_DIR',    buildPath(ROOT_DIR, '/src/middleware'));
 
 
 

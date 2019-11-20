@@ -11,6 +11,12 @@ use Slim\Http\Response;
 class AuthController extends BaseController {
 
     // TODO: fully implement changeEmail
+    /**
+     * [changeEmail description]
+     * @param  Request  $req [description]
+     * @param  Response $res [description]
+     * @return [type]        [description]
+     */
     public function changeEmail(Request $req, Response $res) {
 
         $data = [];
@@ -77,6 +83,12 @@ class AuthController extends BaseController {
 
 
     // TODO: fully implement changePassword
+    /**
+     * [changePassword description]
+     * @param  Request  $req [description]
+     * @param  Response $res [description]
+     * @return [type]        [description]
+     */
     public function changePassword(Request $req, Response $res) {
 
         $data = [];
@@ -123,6 +135,12 @@ class AuthController extends BaseController {
 
 
     // TODO: fully implement account confirmation
+    /**
+     * [confirmation description]
+     * @param  Request  $req [description]
+     * @param  Response $res [description]
+     * @return [type]        [description]
+     */
     public function confirmation(Request $req, Response $res) {
 
         $data = [];
@@ -174,6 +192,12 @@ class AuthController extends BaseController {
 
 
     // TODO: fully implement account deactivation
+    /**
+     * [deactivate description]
+     * @param  Request  $req [description]
+     * @param  Response $res [description]
+     * @return [type]        [description]
+     */
     public function deactivate(Request $req, Response $res) {
 
         $data = [
@@ -185,6 +209,12 @@ class AuthController extends BaseController {
 
 
     // TODO: fully integrate forgotPassword
+    /**
+     * [forgotPassword description]
+     * @param  Request  $req [description]
+     * @param  Response $res [description]
+     * @return [type]        [description]
+     */
     public function forgotPassword(Request $req, Response $res) {
 
         $data = [];
@@ -243,9 +273,10 @@ class AuthController extends BaseController {
 
 
     /**
-     * @param  Request
-     * @param  Response
-     * @return [type]
+     * [login description]
+     * @param  Request  $req [description]
+     * @param  Response $res [description]
+     * @return [type]        [description]
      */
     public function login(Request $req, Response $res) {
 
@@ -313,12 +344,11 @@ class AuthController extends BaseController {
         return $res->withJson($data, $statusCode);
     }
 
-
-
     /**
-     * @param  Request
-     * @param  Response
-     * @return [type]
+     * [logout description]
+     * @param  Request  $req [description]
+     * @param  Response $res [description]
+     * @return [type]        [description]
      */
     public function logout(Request $req, Response $res) {
 
@@ -353,9 +383,10 @@ class AuthController extends BaseController {
 
 
     /**
-     * @param  Request
-     * @param  Response
-     * @return [type]
+     * [register description]
+     * @param  Request  $req [description]
+     * @param  Response $res [description]
+     * @return [type]        [description]
      */
     public function register(Request $req, Response $res) {
 
@@ -420,6 +451,12 @@ class AuthController extends BaseController {
 
 
     // TODO: fully integrate resetPassword
+    /**
+     * [resetPassword description]
+     * @param  Request  $req [description]
+     * @param  Response $res [description]
+     * @return [type]        [description]
+     */
     public function resetPassword(Request $req, Response $res) {
 
         $body = $req->getParsedBody();
@@ -485,6 +522,12 @@ class AuthController extends BaseController {
 
 
     // TODO: fully integrate resendConfirmation
+    /**
+     * [resendConfirmation description]
+     * @param  Request  $req [description]
+     * @param  Response $res [description]
+     * @return [type]        [description]
+     */
     public function resendConfirmation(Request $req, Response $res) {
 
         $body = $req->getParsedBody();
@@ -528,6 +571,12 @@ class AuthController extends BaseController {
 
 
     // TODO: fully integrate verifyPasswordReset
+    /**
+     * [verifyPasswordReset description]
+     * @param  Request  $req [description]
+     * @param  Response $res [description]
+     * @return [type]        [description]
+     */
     public function verifyPasswordReset(Request $req, Response $res) {
 
         $body = $req->getParsedBody();

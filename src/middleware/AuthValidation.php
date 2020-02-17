@@ -24,6 +24,7 @@ class AuthValidation extends ValidationMiddleware {
         $body = filter_var_array($body, [
             'email'     => FILTER_SANITIZE_EMAIL,
             'password'  => FILTER_SANITIZE_STRING,
+            'remember'  => FILTER_SANITIZE_STRING,
         ]);
 
         // validate sanitized data
@@ -32,6 +33,7 @@ class AuthValidation extends ValidationMiddleware {
         $validation = $validator->make($body, [
             'email'     => 'required|email',
             'password'  => 'required|min:16',
+            'remember'  => 'default:0|integer',
         ]);
 
         $validation->validate();
@@ -45,6 +47,10 @@ class AuthValidation extends ValidationMiddleware {
 
             return $res->withStatus(403)->withJson($msg);
         }
+
+
+        // TODO: secondary validation that the password field does not exist in the default passwords database table
+
 
         $res = $next($req, $res);
 

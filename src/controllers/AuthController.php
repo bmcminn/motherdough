@@ -3,45 +3,13 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Mailer;
 use Delight\Auth;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 
 class AuthController extends BaseController {
-
-    private $statusCode;
-    private $statusMsg;
-
-    private $resBody = [];
-
-
-    private function setStatus(int $code, string $msg, string $msgVariant, array $ctx) {
-        $this->statusCode           = $code;
-        $this->resBody['success']   = $code >= 400 ? true : false;
-        $this->resBody['message']   = trim($msg);
-
-        // TODO: setup logging when certain $code values are met
-        switch($code) {
-            case 200:
-                $this->logger->info($msg, $ctx);
-                break;
-            case 300:
-            case 301:
-            case 302:
-            case 303:
-            case 400:
-            case 403:
-                $this->logger->warning($msg, $ctx);
-                break;
-            case 200:
-            case 500:
-                $this->logger->error($msg, $ctx);
-                break;
-        }
-    }
-
-
 
     // TODO: fully implement changeEmail
     /**
@@ -54,17 +22,22 @@ class AuthController extends BaseController {
 
         $body   = $req->getParsedBody();
 
+        $newEmail   = $body['newEmail'];
+        $password   = $body['password'];
 
         try {
-            if ($this->auth->reconfirmPassword($_POST['password'])) {
-                $this->auth->changeEmail($_POST['newEmail'], function ($selector, $token) {
+            if ($this->auth->reconfirmPassword($password)) {
+                $this->auth->changeEmail($newEmail, function ($selector, $token) {
                     echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email to the *new* address)';
+
+                    // Mailer::sendChangeEmail($selector, $token);
                 });
 
                 echo 'The change will take effect as soon as the new email address has been confirmed';
-            }
-            else {
+
+            } else {
                 echo 'We can\'t say if the user is who they claim to be';
+
             }
 
             $this->setStatus(200, 'Password has been changed');
@@ -200,6 +173,8 @@ class AuthController extends BaseController {
         try {
             $this->auth->forgotPassword($_POST['email'], function ($selector, $token) {
                 echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email)';
+
+                Mailer::sendForgotPassword($selector, $token);
             });
             $this->setStatus(200, 'Request has been generated');
 
@@ -237,9 +212,14 @@ class AuthController extends BaseController {
 
         $body   = $req->getParsedBody();
 
+        $email              = $body['email'] ?? null;
+        $password           = $body['password'] ?? null;
+        $rememberDuration   = $body['remember'] ?? null;
+
+        $data = [];
 
         try {
-            $this->auth->login($body['email'], $body['password']);
+            $this->auth->login($email, $password, $rememberDuration);
 
             $data['user'] = [
                 'id'        => $this->auth->getUserId(),
@@ -254,29 +234,27 @@ class AuthController extends BaseController {
             // TODO: make session.controller to generate auth token and return to user
             // $this->logger->info($status[0][1], );
 
-            $this->setStatus(200, 'Login successful', [
+            $ctx = [
                 'ip'        => $this->auth->getIpAddress(),
                 'userId'    => $this->auth->getUserId(),
-            ]);
+            ];
+
+            $this->setStatus(200, $ctx, 'Login successful');
         }
         catch (Auth\InvalidEmailException $e) {
-
-            $this->setStatus(400, 'Wrong login credentails', [
-                'ip'        => $this->auth->getIpAddress(),
-                'userId'    => $this->auth->getUserId(),
-            ]);
+            $this->setStatus(400, null, 'Invalid login credentails', 'Invalid email event');
         }
         catch (Auth\InvalidPasswordException $e) {
-            $this->setStatus(400, 'Wrong login credentails', 'Wrong password');
+            $this->setStatus(400, null, 'Invalid login credentails', 'Invalid password event');
         }
         catch (Auth\EmailNotVerifiedException $e) {
-            $this->setStatus(401, 'Email not verified');
+            $this->setStatus(401, null, 'Email not verified');
         }
         catch (Auth\TooManyRequestsException $e) {
-            $this->setStatus(429, 'Too many requests');
+            $this->setStatus(429, null, 'Too many requests');
         }
 
-        return $res->withJson($data, $statusCode);
+        return $res->withJson($this->resBody, $this->statusCode);
     }
 
     /**
@@ -293,10 +271,10 @@ class AuthController extends BaseController {
             $this->auth->logOutEverywhere();
             $this->auth->destroySession();
             session_destroy();
-            $this->setStatus(200, 'Login successful');
+            $this->setStatus(200, null, null, 'Login successful');
         }
         catch (Auth\NotLoggedInException $e) {
-            $this->setStatus(400, 'Wrong login credentails', 'Wrong email');
+            $this->setStatus(400, null, 'Invalid login credentails', 'Invalid email event');
             // die('Not logged in');
         }
 
@@ -330,19 +308,19 @@ class AuthController extends BaseController {
                 // fourth argument is a callback to send registratino confirmation email
             );
 
-            $this->setStatus(200, 'User registration was successful');
+            $this->setStatus(200, null, 'User registration was successful');
         }
         catch (Auth\InvalidEmailException $e) {
-            $this->setStatus(400, 'Provided email was invalid');
+            $this->setStatus(400, null, 'Invalid login credentials', 'Provided email was invalid');
         }
         catch (Auth\InvalidPasswordException $e) {
-            $this->setStatus(400, 'Provided password was invalid');
+            $this->setStatus(400, null, 'Invalid login credentials', 'Provided password was invalid');
         }
         catch (Auth\UserAlreadyExistsException $e) {
-            $this->setStatus(409, 'That username is already taken');
+            $this->setStatus(409, null, 'That username is already taken');
         }
         catch (Auth\TooManyRequestsException $e) {
-            $this->setStatus(429, 'Too many requests');
+            $this->setStatus(429, null, 'Too many requests');
         }
 
         return $res->withJson($this->resBody, $this->statusCode);
@@ -363,27 +341,27 @@ class AuthController extends BaseController {
         try {
             $this->auth->resetPassword($_POST['selector'], $_POST['token'], $_POST['password']);
 
-            $this->setStatus(200, 'Password has been reset');
+            $this->setStatus(200, null, 'Password has been reset');
 
         }
         catch (Auth\InvalidSelectorTokenPairException $e) {
-            $this->setStatus(400, 'Invalid token');
+            $this->setStatus(400, null, 'Invalid token');
             // die('Invalid token');
         }
         catch (Auth\TokenExpiredException $e) {
-            $this->setStatus(401, 'Token expired');
+            $this->setStatus(401, null, 'Token expired');
             // die('Token expired');
         }
         catch (Auth\ResetDisabledException $e) {
-            $this->setStatus(403, 'Password reset is disabled');
+            $this->setStatus(403, null, 'Password reset is disabled');
             // die('Password reset is disabled');
         }
         catch (Auth\InvalidPasswordException $e) {
-            $this->setStatus(400, 'Invalid password');
+            $this->setStatus(400, null, 'Invalid password');
             // die('Invalid password');
         }
         catch (Auth\TooManyRequestsException $e) {
-            $this->setStatus(429, 'Too many requests');
+            $this->setStatus(429, null, 'Too many requests');
             // die('Too many requests');
         }
 
@@ -408,14 +386,14 @@ class AuthController extends BaseController {
                 echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email)';
             });
 
-            $this->setStatus(200, 'The user may now respond to the confirmation request (usually by clicking a link)');
+            $this->setStatus(200, null, 'The user may now respond to the confirmation request (usually by clicking a link)');
         }
         catch (Auth\ConfirmationRequestNotFound $e) {
-            $this->setStatus(404, 'No earlier request found that could be re-sent');
+            $this->setStatus(404, null, 'No earlier request found that could be re-sent');
             // die('No earlier request found that could be re-sent');
         }
         catch (Auth\TooManyRequestsException $e) {
-            $this->setStatus(429, 'There have been too many requests -- try again later');
+            $this->setStatus(429, null, 'There have been too many requests -- try again later');
             // die('There have been too many requests -- try again later');
         }
 
@@ -438,22 +416,22 @@ class AuthController extends BaseController {
         try {
             $this->auth->canResetPasswordOrThrow($_GET['selector'], $_GET['token']);
 
-            $this->setStatus(200, 'Please enter your new password');
+            $this->setStatus(200, null, 'Please enter your new password');
         }
         catch (Auth\InvalidSelectorTokenPairException $e) {
-            $this->setStatus(404, 'Invalid token');
+            $this->setStatus(404, null, 'Invalid token');
             // die('Invalid token');
         }
         catch (Auth\TokenExpiredException $e) {
-            $this->setStatus(429, 'Token expired');
+            $this->setStatus(429, null, 'Token expired');
             // die('Token expired');
         }
         catch (Auth\ResetDisabledException $e) {
-            $this->setStatus(403, 'Password reset is disabled');
+            $this->setStatus(403, null, 'Password reset is disabled');
             // die('Password reset is disabled');
         }
         catch (Auth\TooManyRequestsException $e) {
-            $this->setStatus(429, 'Too many requests');
+            $this->setStatus(429, null, 'Too many requests');
             // die('Too many requests');
         }
 

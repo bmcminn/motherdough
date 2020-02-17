@@ -25,16 +25,22 @@ return function(App $app) {
 
 
     $app->post('/register',     AuthController::class . ':register')
+        // TODO: setup register auth middleware method
+        // ->add(AuthValidation::class . ':register')
         ->setName('auth_register')
         ;
 
 
     $app->get('/confirmation',  AuthController::class . ':confirmation')
+        // TODO: confirmation register auth middleware method
+        // ->add(AuthValidation::class . ':confimration')
         ->setName('auth_confirmation')
         ;
 
 
     $app->post('/deactivate',   AuthController::class . ':deactivate')
+        // TODO: setup deactivate auth middleware method
+        // ->add(AuthValidation::class . ':deactivate')
         // ->add($DI->get('auth_middleware'))
         ->setName('auth_deactivate')
         ;

@@ -13,14 +13,17 @@ class DebugMiddleware {
 
         $IS_JSON = $_SERVER['CONTENT_TYPE'] === 'application/json';
 
-        $data['req'] = $req->getParsedBody();
+        // $data['req'] = $req->getParsedBody();
 
-        $body = $res->getBody()->__toString();
-        $body = json_decode($body);
 
-        if ($IS_JSON) {
+        if (env('local') && $IS_JSON) {
 
-            $body->debug_headers = [
+            $body = $res->getBody()->__toString();
+            $body = json_decode($body);
+
+            $debug = (object) [];
+
+            $debug->headers = [
                 'Accept'            => $_SERVER['HTTP_ACCEPT'] ?? null,
                 'Content-Length'    => $_SERVER['CONTENT_LENGTH'] ?? null,
                 'Content-Type'      => $_SERVER['CONTENT_TYPE'] ?? null,
@@ -29,15 +32,20 @@ class DebugMiddleware {
                 'User-Agent'        => $_SERVER['HTTP_USER_AGENT'] ?? null,
             ];
 
-            $body->debug_json         = $IS_JSON;
-            $body->debug_method       = $_SERVER['REQUEST_METHOD'] ?? null;
-            $body->debug_origin       = $_SERVER['HTTP_ORIGIN'] ?? null;
-            $body->debug_requestTime  = $_SERVER['REQUEST_TIME'] ?? 0;
+            $debug->isJson       = $IS_JSON;
+            $debug->method       = $_SERVER['REQUEST_METHOD'] ?? null;
+            $debug->origin       = $_SERVER['HTTP_ORIGIN'] ?? null;
+            $debug->requestTime  = $_SERVER['REQUEST_TIME'] ?? 0;
 
-            $url_path   = $_SERVER['REQUEST_URI'] ?? null;
-            $url_host   = $_SERVER['HTTP_HOST'] ?? null;
+            $protocol       = $_SERVER['SERVER_PROTOCOL'] ?? null;
+            $hostname       = $_SERVER['HTTP_HOST'] ?? null;
+            $pathname       = $_SERVER['REQUEST_URI'] ?? null;
 
-            $body->debug_url = "{$url_host}{$url_path}";
+            $debug->url     = sprintf("%s%s%s", $protocol, $hostname, $pathname);
+            $debug->host    = $hostname;
+            $debug->path    = $pathname;
+
+            $body->debug = $debug;
         }
 
         return $res->withJson($body);

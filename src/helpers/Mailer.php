@@ -12,7 +12,12 @@ class Mailer {
 
 
     public static function sendForgotPassword($email, $token) {
-
+    	$content = "Reset token: {$token}";
+    	$headers = [
+    		'from' => 'info@site.com',
+    	];
+    	$success = self::composeEmail($email, 'password reset', $content, $headers);
+    	return $success;
     }
 
 
@@ -21,7 +26,7 @@ class Mailer {
         // TODO: figure out some form of content composition
         $html = $content;
 
-        mail($to, $subject, $content, $headers)
+        mail($to, $subject, $content, $headers);
     }
 
 

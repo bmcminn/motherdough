@@ -1,8 +1,8 @@
 <?php
 
 use Slim\App;
-use Slim\Http\Request;
-use Slim\Http\Response;
+// use Slim\Http\Request;
+// use Slim\Http\Response;
 
 
 if (PHP_SAPI == 'cli-server') {

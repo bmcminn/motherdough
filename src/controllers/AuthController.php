@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Mailer;
+use App\Helpers\Mailer;
 use Delight\Auth;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -167,32 +167,41 @@ class AuthController extends BaseController {
      */
     public function forgotPassword(Request $req, Response $res) {
 
-        $body   = $req->getParsedBody();
+        $body = $req->getParsedBody();
 
+        $this->logger->debug('forgotPassword event success', [ $body ]);
 
         try {
-            $this->auth->forgotPassword($_POST['email'], function ($selector, $token) {
+            $this->auth->forgotPassword($body['email'], function ($selector, $token) {
                 echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email)';
 
-                Mailer::sendForgotPassword($selector, $token);
+                $success = Mailer::sendForgotPassword($selector, $token);
+
+                if ($success) {
+                    $this->logger->debug('forgotPassword event success', [ $token ]);
+                } else {
+                    $this->logger->warning('forgotPassword event failed...');
+                }
+
             });
-            $this->setStatus(200, 'Request has been generated');
+
+            $this->setStatus(200, null, 'Request has been generated');
 
         }
         catch (Auth\InvalidEmailException $e) {
-            $this->setStatus(400, 'Invalid email address');
+            $this->setStatus(400, null, 'Invalid email address');
             // die('Invalid email address');
         }
         catch (Auth\EmailNotVerifiedException $e) {
-            $this->setStatus(400, 'Email not verified');
+            $this->setStatus(400, null, 'Email not verified');
             // die('Email not verified');
         }
         catch (Auth\ResetDisabledException $e) {
-            $this->setStatus(401, 'Password reset is disabled');
+            $this->setStatus(401, null, 'Password reset is disabled');
             // die('Password reset is disabled');
         }
         catch (Auth\TooManyRequestsException $e) {
-            $this->setStatus(429, 'Too many requests');
+            $this->setStatus(429, null, 'Too many requests');
             // die('Too many requests');
         }
 
@@ -237,6 +246,7 @@ class AuthController extends BaseController {
             $ctx = [
                 'ip'        => $this->auth->getIpAddress(),
                 'userId'    => $this->auth->getUserId(),
+                'data'      => $data,
             ];
 
             $this->setStatus(200, $ctx, 'Login successful');
@@ -339,7 +349,7 @@ class AuthController extends BaseController {
         $body = $req->getParsedBody();
 
         try {
-            $this->auth->resetPassword($_POST['selector'], $_POST['token'], $_POST['password']);
+            $this->auth->resetPassword($body['selector'], $body['token'], $body['password']);
 
             $this->setStatus(200, null, 'Password has been reset');
 

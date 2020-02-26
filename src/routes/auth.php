@@ -13,32 +13,46 @@ return function(App $app) {
 
     // TODO: implement DelightIM\Auth: https://github.com/delight-im/PHP-Auth#email-verification
 
-    $app->post('/login',        AuthController::class . ':login')
+    $app->post('/login', AuthController::class . ':login')
         ->add(AuthValidation::class . ':login')
         ->setName('auth_login')
         ;
 
 
-    $app->post('/logout',       AuthController::class . ':logout')
+    $app->post('/logout', AuthController::class . ':logout')
         ->setName('auth_logout')
         ;
 
 
-    $app->post('/register',     AuthController::class . ':register')
+    $app->post('/register', AuthController::class . ':register')
         // TODO: setup register auth middleware method
         // ->add(AuthValidation::class . ':register')
         ->setName('auth_register')
         ;
 
 
-    $app->get('/confirmation',  AuthController::class . ':confirmation')
+    $app->post('/forgot-password', AuthController::class . ':forgotPassword')
+        // TODO: setup register auth middleware method
+        // ->add(AuthValidation::class . ':register')
+        ->setName('auth_forgot_password')
+        ;
+
+
+    $app->post('/reset-password', AuthController::class . ':resetPassword')
+        // TODO: setup register auth middleware method
+        // ->add(AuthValidation::class . ':register')
+        ->setName('auth_reset_password')
+        ;
+
+
+    $app->get('/confirmation', AuthController::class . ':confirmation')
         // TODO: confirmation register auth middleware method
         // ->add(AuthValidation::class . ':confimration')
         ->setName('auth_confirmation')
         ;
 
 
-    $app->post('/deactivate',   AuthController::class . ':deactivate')
+    $app->post('/deactivate', AuthController::class . ':deactivate')
         // TODO: setup deactivate auth middleware method
         // ->add(AuthValidation::class . ':deactivate')
         // ->add($DI->get('auth_middleware'))

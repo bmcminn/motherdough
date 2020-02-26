@@ -11,17 +11,17 @@ class DebugMiddleware {
     public function __invoke(Request $req, Response $res, $next) {
         $res = $next($req, $res);
 
-        $IS_JSON = $_SERVER['CONTENT_TYPE'] === 'application/json';
+        $IS_JSON = ($_SERVER['CONTENT_TYPE'] ?? '') === 'application/json';
 
+        $body = null;
         // $data['req'] = $req->getParsedBody();
 
+        if (IS_DEV && $IS_JSON) {
 
-        if (env('local') && $IS_JSON) {
+            $body   = $res->getBody()->__toString();
+            $body   = json_decode($body);
 
-            $body = $res->getBody()->__toString();
-            $body = json_decode($body);
-
-            $debug = (object) [];
+            $debug  = (object) [];
 
             $debug->headers = [
                 'Accept'            => $_SERVER['HTTP_ACCEPT'] ?? null,

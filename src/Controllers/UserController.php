@@ -54,14 +54,14 @@ class UserController {
             Logger::debug('user id', $id);
 
         // TODO: setup custom exceptions for models https://www.php.net/manual/en/language.exceptions.extending.php
-        // } catch(\UserExistsException $err) {
-        //     $res['success']   = false;
-        //     $res['error']     = $err->getMessage();
-        // }
-        } catch(\Exception $err) {
+        } catch(\UserExistsException $err) {
             $res['success']   = false;
             $res['error']     = $err->getMessage();
         }
+        // } catch(\Exception $err) {
+        //     $res['success']   = false;
+        //     $res['error']     = $err->getMessage();
+        // }
 
 
        return response()->json($res);

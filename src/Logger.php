@@ -55,6 +55,7 @@ class Logger {
         self::$logFilename = trim($logFilename);
     }
 
+
     public static function setLogTarget(string $target) {
         self::$logTarget = trim($target);
     }
@@ -91,7 +92,6 @@ class Logger {
     }
 
 
-
     private static function _cleanupLogsFolder() {
 
         $logs = scandir(dirname(self::$logTarget), SCANDIR_SORT_DESCENDING);
@@ -105,7 +105,6 @@ class Logger {
             unlink($file);
         }
     }
-
 
 
     private static function _callLogger(int $level, ...$args) {
@@ -124,7 +123,6 @@ class Logger {
             }
         }
     }
-
 
 
     private static function _logger(int $level, ...$args) {
@@ -156,6 +154,7 @@ class Logger {
 
         file_put_contents(self::$logTarget, $log, FILE_APPEND);
     }
+
 
     public static function debug(...$args)      { return self::_logger(self::DEBUG, ...$args); }
     public static function info(...$args)       { return self::_logger(self::INFO, ...$args); }

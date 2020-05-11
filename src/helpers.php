@@ -5,7 +5,6 @@ use Pecee\SimpleRouter\SimpleRouter as Router;
 use Pecee\Http\Url;
 use Pecee\Http\Response;
 use Pecee\Http\Request;
-use Rakit\Validation\Validator;
 
 
 /**
@@ -96,7 +95,6 @@ function src_path($path='') { return base_path("src/{$path}"); }
 
 
 
-
 if (!function_exists('throw_when')) {
     function throw_when(bool $fails, string $message, string $exception = Exception::class) {
         if (!$fails) { return; }
@@ -132,12 +130,15 @@ if (!function_exists('is_dev')) {
 
 
 
-
-
-
+/**
+ * Valdation macro for Rakit Validator
+ * @sauce  https://github.com/rakit/validation
+ * @param  array    $data   Associative array of values to validate
+ * @param  array    $config Collection of parameters and their validation controls per the Rakit Validation documentation
+ * @return array            If errors, returns list of errors; Else empty array
+ */
 function validate($data, $config) {
-
-    $validator = new Validator;
+    $validator = new \Rakit\Validation\Validator;
 
     // $validation = $validator->validate($_POST + $_FILES, [
     $validation = $validator->validate($data, $config);
@@ -147,12 +148,17 @@ function validate($data, $config) {
     }
 
     return [];
-
 }
 
 
-function only($data, array $list) :array {
 
+/**
+ * Filters an associative array to only have the data you want
+ * @param  array    $data   Associative array of data to filter
+ * @param  array    $list   List of properties to be captured
+ * @return array            Filtered list of desired properties
+ */
+function only($data, array $list) :array {
     $res = [];
 
     foreach ($list as $i => $key) {
@@ -165,8 +171,14 @@ function only($data, array $list) :array {
 }
 
 
-function except($data, $list=[]) :array {
 
+/**
+ * Filters an associative array to exclude the data you don't want
+ * @param  array    $data   Associative array of data to filter
+ * @param  array    $list   List of properties to be excluded
+ * @return array            Filtered list of desired properties
+ */
+function except($data, $list=[]) :array {
     foreach ($list as $i => $key) {
         if ($data[$key]) {
             unset($data[$key]);
@@ -177,9 +189,17 @@ function except($data, $list=[]) :array {
 }
 
 
-function has($data, $list=[]) :array {
+
+/**
+ * Array helper to determine if a given collection has some required values
+ * @param  array    $data Data to be checked
+ * @param  array    $list List of required properties to be checked
+ * @return boolean        True if passes, false if failed
+ */
+function has(array $data, array $list=[]) :boolean {
     foreach ($list as $i => $key) {
         if (!$data[$key]) {
+            throw new \Exception("Missing property: Data must have property {$key}");
             return false;
         }
     }
@@ -188,23 +208,40 @@ function has($data, $list=[]) :array {
 }
 
 
-function hash_password($pass) :string {
+
+/**
+ * Alias for password_hash that provides PASSWORD_ARGON2I by default
+ * @param  string $pass Password to be hashed
+ * @return string       Hashed password
+ */
+function hash_password(string $pass) :string {
     return password_hash($pass, PASSWORD_ARGON2I);
 }
 
 
-function rehash_password($hash) :string {
+
+/**
+ * Alias for password_needs_rehash that provides PASSWORD_ARGON2I by default
+ * @param  string $hash Password to be hashed
+ * @return string       Hashed password
+ */
+function rehash_password(string $hash) :string {
     return password_needs_rehash($hash, PASSWORD_ARGON2I);
 }
 
 
 
-function load_models($dir) {
+/**
+ * Iterates over a given directory and requires all files within
+ * @param  string $dir [description]
+ * @return [type]      [description]
+ */
+function require_dir(string $dir) {
 
     $models = scandir($dir);
 
     foreach ($models as $filepath) {
-        if ($filepath === '.' || $filepath === '..') { continue; }
+        if ($filepath === '.' || $filepath === '..' || strpos($filepath, '.php') === false) { continue; }
 
         $filepath = $dir. '/' . $filepath;
 

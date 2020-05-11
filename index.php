@@ -1,7 +1,7 @@
 <?php
 
 use App\Logger;
-use Pecee\SimpleRouter\SimpleRouter as Route;
+use Pecee\SimpleRouter\SimpleRouter as Router;
 use RedBeanPHP\Facade as R;
 
 
@@ -27,10 +27,6 @@ Logger::config([
     'name'      => 'events',
     'numLogs'   => is_prod() ? env('NUM_LOGS', 0) : 0,
     'logTarget' => storage_path("logs/{$today}.dev.log"),
-    // 'logTargets' => [
-    //     storage_path("logs/{$today}.dev.log"),
-    //     'cli',
-    // ],
 ]);
 
 
@@ -45,7 +41,7 @@ require resource_path('lib/Redbean/rb-sqlite.php');
 R::setup('sqlite:' . storage_path('data/dbfile.db'));
 // R::debug(is_dev());
 
-load_models(src_path('models'));
+require_dir(src_path('models'));
 
 
 
@@ -53,7 +49,7 @@ load_models(src_path('models'));
 // INIT ROUTES
 //
 
-Route::get('/', function() {
+Router::get('/', function() {
 
     return "sefsjekl";
 
@@ -64,7 +60,8 @@ Route::get('/', function() {
 
 // https://www.instagram.com/p/B_wOfqWoZnp/
 
-Route::post('/api/create/user', '\App\Controllers\UserController@createUser');
+Router::post('/auth/user',   '\App\Controllers\UserController@register');
+Router::post('/auth/login',  '\App\Controllers\UserController@login');
 
 
 
@@ -75,7 +72,7 @@ Route::post('/api/create/user', '\App\Controllers\UserController@createUser');
 
 
 
-Route::start();
+Router::start();
 
 
 R::close();

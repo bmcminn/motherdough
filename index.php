@@ -21,6 +21,26 @@ require __DIR__ . '/vendor/autoload.php';
 
 
 //
+// GET ENVIRONMENT CONFIGS
+//
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+
+
+//
+// SETUP ERROR HANDLER(S)
+//
+$whoops = new \Whoops\Run;
+// TODO: research Whoops JsonResponseHandler
+// $whoops->pushHandler(new \Whoops\Handler\JsonResponseHandler);
+$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+$whoops->register();
+
+
+
+//
 // SETUP LOGGER
 //
 
@@ -34,11 +54,14 @@ Logger::config([
 
 
 
+//
+// SETUP VIEW INSTANCE
+//
+
 View::config(
 	resource_path('views'),
 	storage_path('views')
 );
-
 
 
 

@@ -13,14 +13,15 @@ Router::get('/', function() {
 });
 
 
+if (is_dev()) {
+	Router::get('/test/views/{type}/{status}', function(string $type, string $status) {
 
-Router::get('/test/views/{type}/{status}', function(string $type, string $status) {
+		// TODO: possible MJML integration point: https://packagist.org/packages/rennokki/laravel-mjml
 
-	// TODO: possible MJML integration point: https://packagist.org/packages/rennokki/laravel-mjml
+	    return View::render("{$type}.{$status}");
 
-    return View::render("{$type}.{$status}");
-
-});
+	});
+}
 
 
 

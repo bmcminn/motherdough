@@ -3,7 +3,9 @@
 namespace App;
 
 
-class Logger {
+// TODO: conver this class to a static wrapper/extension of https://packagist.org/packages/monolog/monolog
+
+final class Logger {
 
     private static $timestampFormat = 'Y-m-d|H:i:s';
     private static $logFilename     = '';

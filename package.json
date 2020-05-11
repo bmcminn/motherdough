@@ -1,0 +1,27 @@
+{
+    "scripts": {
+        "client:test": "echo \"Error: no test specified\" && exit 1",
+        "client:dev": "run-p start build",
+        "client:build": "rollup -c -w",
+        "api:dump": "composer dump-autoload -o",
+        "api:start": "php -S localhost:3005 index.php",
+        "api:dev": "yarn api:dump && yarn api:start"
+    },
+
+    "dependencies": {
+        "svelte-router-spa": "^5.6.0"
+    },
+
+    "devDependencies": {
+        "@rollup/plugin-node-resolve": "^7.1.3",
+        "@rollup/plugin-commonjs": "^11.1.0",
+        "jest": "^26.0.1",
+        "npm-run-all": "^4.1.5",
+        "rollup": "^2.9.0",
+        "rollup-plugin-livereload": "^1.3.0",
+        "rollup-plugin-styles": "^1.5.2",
+        "rollup-plugin-svelte": "^5.2.1",
+        "stylus": "^0.54.7",
+        "svelte": "^3.22.2"
+    }
+}

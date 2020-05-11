@@ -3,6 +3,7 @@ node_modules/
 *.log
 .env*
 !.env.example
-storage/views-cache/
+storage/views/*.php
 *.db
 *.sqlite
+*.*-workspace

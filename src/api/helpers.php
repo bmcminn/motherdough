@@ -29,6 +29,7 @@ function url(?string $name = null, $parameters = null, ?array $getParams = null)
     return Router::getUrl($name, $parameters, $getParams);
 }
 
+
 /**
  * @return \Pecee\Http\Response
  */
@@ -36,12 +37,14 @@ function response() :Response {
     return Router::response();
 }
 
+
 /**
  * @return \Pecee\Http\Request
  */
 function request() :Request {
     return Router::request();
 }
+
 
 /**
  * Get input class
@@ -58,6 +61,7 @@ function input($index = null, $defaultValue = null, ...$methods) {
     return request()->getInputHandler();
 }
 
+
 /**
  * @param string $url
  * @param int|null $code
@@ -69,6 +73,7 @@ function redirect(string $url, ?int $code = null) :void {
 
     response()->redirect($url);
 }
+
 
 /**
  * Get current csrf-token
@@ -86,7 +91,7 @@ function csrf_token() :?string {
 
 
 function base_path($path='') {
-    return __DIR__ . "/../{$path}";
+    return __DIR__ . "/../../{$path}";
 }
 
 function storage_path($path='') { return base_path("storage/{$path}"); }

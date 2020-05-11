@@ -1,8 +1,10 @@
 <?php
 
 use App\Logger;
+use App\View;
 use Pecee\SimpleRouter\SimpleRouter as Router;
 use RedBeanPHP\Facade as R;
+
 
 
 if (PHP_SAPI === 'cli-server') {
@@ -11,6 +13,7 @@ if (PHP_SAPI === 'cli-server') {
 
     if (is_file($file)) { return false; }
 }
+
 
 
 require __DIR__ . '/vendor/autoload.php';
@@ -31,6 +34,14 @@ Logger::config([
 
 
 
+View::config(
+	resource_path('views'),
+	storage_path('views')
+);
+
+
+
+
 //
 // SETUP ORM INSTANCE
 //
@@ -41,38 +52,23 @@ require resource_path('lib/Redbean/rb-sqlite.php');
 R::setup('sqlite:' . storage_path('data/dbfile.db'));
 // R::debug(is_dev());
 
-require_dir(src_path('models'));
+require_dir(src_path('api/Models'));
 
 
 
 //
-// INIT ROUTES
+// INIT ROUTES/ROUTER
 //
 
-Router::get('/', function() {
-
-    return "sefsjekl";
-
-});
-
-
-
-
-// https://www.instagram.com/p/B_wOfqWoZnp/
-
-Router::post('/auth/user',   '\App\Controllers\UserController@register');
-Router::post('/auth/login',  '\App\Controllers\UserController@login');
-
-
-
-
-
-
-
-
+require src_path('api/routes.php');
 
 
 Router::start();
 
+
+
+//
+// CLEANUP AFTER OURSELVES
+//
 
 R::close();

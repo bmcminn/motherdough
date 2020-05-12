@@ -122,14 +122,14 @@ if (!function_exists('env')) {
 
 if (!function_exists('is_prod')) {
     function is_prod() {
-        return env('ENV', true) ? true : false;
+        return env('APP_ENV', 'prod') === 'prod';
     }
 }
 
 
 if (!function_exists('is_dev')) {
     function is_dev() {
-        return !env('ENV', false) ? true : false;
+        return !is_prod();
     }
 }
 

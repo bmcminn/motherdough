@@ -8,7 +8,7 @@ use Pecee\SimpleRouter\SimpleRouter as Router;
 
 Router::get('/', function() {
 
-    return View::render('api.homepage');
+    return View::render('api.homepage', [ 'isDev' => is_dev() ]);
 
 });
 
@@ -16,9 +16,13 @@ Router::get('/', function() {
 if (is_dev()) {
 	Router::get('/test/views/{type}/{status}', function(string $type, string $status) {
 
-		// TODO: possible MJML integration point: https://packagist.org/packages/rennokki/laravel-mjml
+        $template = "{$type}.{$status}";
 
-	    return View::render("{$type}.{$status}");
+        Logger::debug('testing', $template);
+		// TODO: possible MJML integration point: https://packagist.org/packages/rennokki/laravel-mjml
+        // TODO: possible to develop MJML extensions for Blade
+
+	    return View::render($template);
 
 	});
 }

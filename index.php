@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Logger;
 use App\View;
+
 use Pecee\SimpleRouter\SimpleRouter as Router;
 use RedBeanPHP\Facade as R;
 
@@ -15,6 +18,9 @@ if (PHP_SAPI === 'cli-server') {
 }
 
 
+//
+// AUTOLOAD ALL THE THINGS!
+//
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -26,6 +32,14 @@ require __DIR__ . '/vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
+
+
+
+//
+// CONFIGURE ENVIRONMENT
+//
+
+date_default_timezone_set(env('APP_TIMEZONE', 'UTC'));
 
 
 
@@ -72,9 +86,8 @@ View::config(
 
 require resource_path('lib/Redbean/rb-sqlite.php');
 
-// define('REDBEAN_MODEL_PREFIX', '');
 R::setup('sqlite:' . storage_path('data/dbfile.db'));
-// R::debug(is_dev());
+R::debug(is_dev());
 
 require_dir(src_path('api/Models'));
 

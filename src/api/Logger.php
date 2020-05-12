@@ -3,170 +3,200 @@
 namespace App;
 
 
-// TODO: conver this class to a static wrapper/extension of https://packagist.org/packages/monolog/monolog
+use Monolog\Logger as Monologger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Formatter\LineFormatter;
+
 
 final class Logger {
 
-    private static $timestampFormat = 'Y-m-d|H:i:s';
-    private static $logFilename     = '';
-    private static $logLevel        = 100;
-    private static $logTarget       = 'php://stdout';
-    private static $numLogs         = 0;
-    private static $logTargets      = [];
+    protected static $logger;
 
 
-    const PHP_OUT     = 'php://stdout';
-    const DEBUG       = 100;
-    const INFO        = 200;
-    const NOTICE      = 250;
-    const WARNING     = 300;
-    const ERROR       = 400;
-    const EVENT       = 450;
-    const CRITICAL    = 500;
-    const ALERT       = 550;
-    const EMERGENCY   = 600;
+    public const DEBUG     = Monologger::DEBUG;
+    public const INFO      = Monologger::INFO;
+    public const NOTICE    = Monologger::NOTICE;
+    public const WARNING   = Monologger::WARNING;
+    public const ERROR     = Monologger::ERROR;
+    public const CRITICAL  = Monologger::CRITICAL;
+    public const ALERT     = Monologger::ALERT;
+    public const EMERGENCY = Monologger::EMERGENCY;
 
 
-    private static $logLabels = [
-        100 => 'DEBUG',
-        200 => 'INFO',
-        250 => 'NOTICE',
-        300 => 'WARNING',
-        400 => 'ERROR',
-        450 => 'EVENT',
-        500 => 'CRITICAL',
-        550 => 'ALERT',
-        600 => 'EMERGENCY',
-    ];
+    public static function config(array $config): void {
+
+        $config = array_replace([
+            'name'          => 'logs',
+            'path'          => 'path/to/logs',
+            'level'         => Monologger::WARNING,
+            'maxFiles'      => 0,
+            'debug'         => false,
+
+            // formatter definitions
+            'dateFormat'    => '[Y-m-d | H:i:s.v | U]',
+            'logFormat'     => "%datetime% %channel%.%level_name%: %message% %context% %extra%\n",
+            'allowInlineLineBreaks' => false,
+            'ignoreEmptyContextAndExtra' => true,
+        ], $config);
 
 
-    public static function config(array $config) {
-        foreach ($config as $key => $value) {
-            if ($key === 'logName')         { self::$logName($value); }
-            if ($key === 'timestampFormat') { self::timestampFormat($value); }
-            if ($key === 'logLevel')        { self::setLogLevel($value); }
-            if ($key === 'logTarget')       { self::setLogTarget($value); }
-            if ($key === 'numLogs')         { self::setNumLogs($value); }
-
-            // if ($key === 'logTargets')      { self::$logTargets = $value; }
-        }
-    }
+        extract($config);
 
 
-    public static function setFilename(string $logFilename) {
-        self::$logFilename = trim($logFilename);
-    }
+        // define custom formatter
+        $formatter  = new LineFormatter(
+            $logFormat,
+            $dateFormat,
+            $allowInlineLineBreaks,
+            $ignoreEmptyContextAndExtra,
+        );
 
 
-    public static function setLogTarget(string $target) {
-        self::$logTarget = trim($target);
-    }
+        // init logger instance
+        self::$logger = new Monologger($name);
 
 
-    public static function setNumLogs(int $num) {
-        self::$numLogs = $num;
+        // allow for rotating logs or a single log file target
+        $stream;
 
-        // if ($num > 0) {
-        //     self::_cleanupLogsFolder();
-        // }
-    }
+        $logPath = "{$path}/{$name}.log";
 
+        if (0 < $maxFiles) {
+            $stream = new RotatingFileHandler($logPath, $maxFiles, $level);
+            $stream->setFilenameFormat('{date}.{filename}', 'Y-m-d');
 
-    public static function timestampFormat(string $format) {
-        self::$timestampFormat = trim($format);
-    }
+        } else {
+            $stream = new StreamHandler($logPath, $level);
 
-
-    public static function setLogLevel(string $level) {
-        $level = strtoupper($level);
-
-        // You cannot set log level higher than critical
-        if ($logLabels[$level] > self::$CRITICAL) {
-            self::$logLevel = self::$CRITICAL;
         }
 
-        foreach (self::$logLabels as $key => $label) {
-            if ($level === $label) {
-                self::$logLevel = $key;
-                break;
-            }
+        // the default date format is "Y-m-d\TH:i:sP"
+        $stream->setFormatter($formatter);
+
+        self::$logger->pushHandler($stream);
+
+
+        // allow for writing logs to console
+        if ($debug) {
+            $stream = new StreamHandler('php://stdout');
+            $stream->setFormatter($formatter);
+
+            self::$logger->pushHandler($stream);
         }
+
     }
 
 
-    private static function _cleanupLogsFolder() {
-
-        $logs = scandir(dirname(self::$logTarget), SCANDIR_SORT_DESCENDING);
-        $list = array_slice($logs, self::$numLogs);
-
-        foreach ($list as $file) {
-            if ($file === '.' || $file === '..' ) {
-                continue;
-            }
-
-            unlink($file);
-        }
-    }
-
-
-    private static function _callLogger(int $level, ...$args) {
-        if (count(self::$logTargets) > 0) {
-            foreach (self::$logTargets as $target) {
-
-                if (trim($target) === 'cli') {
-                    self::setLogTarget(self::PHP_OUT);
-
-                } else {
-                    self::setLogTarget($target);
-
-                }
-
-                self::_logger($level, $args);
-            }
-        }
-    }
-
-
-    private static function _logger(int $level, ...$args) {
-
-        // if level is less than logLevel, ignore logging the message
-        if ($level < self::$logLevel) { return; }
-
-        $logType = self::$logLabels[$level];
+    /**
+     * [_log description]
+     * @param  array    $args   The message parts to be stringified to be logged
+     * @return string           The stringified message to be logged
+     */
+    private function _log(array $args): string {
 
         foreach ($args as $i => $value) {
-            if (gettype($value) === 'array') {
-                $args[$i] = json_encode($value);
+
+            $argType = trim(strtolower(gettype($value)));
+
+            switch($argType) {
+                case 'array':
+                case 'object':
+                    $args[$i] = json_encode($value);
+                    break;
+
+                case 'boolean':
+                    $args[$i] = $value ? 'true' : 'false';
+                    break;
             }
 
-            if (gettype($value) === 'object') {
-                $args[$i] = json_encode($value);
-            }
-
-            if (gettype($value) === 'boolean') {
-                $args[$i] = $value ? 'true' : 'false';
-            }
+            $args[$i] = trim($value);
         }
 
-        $timestamp = date(self::$timestampFormat);
 
-        $msg = implode(' ', $args);
+        return implode(' ', $args);
 
-        $log = "[{$timestamp}] {$logType}: $msg" . PHP_EOL;
-
-        file_put_contents(self::$logTarget, $log, FILE_APPEND);
     }
 
 
-    public static function debug(...$args)      { return self::_logger(self::DEBUG, ...$args); }
-    public static function info(...$args)       { return self::_logger(self::INFO, ...$args); }
-    public static function notice(...$args)     { return self::_logger(self::NOTICE, ...$args); }
-    public static function warning(...$args)    { return self::_logger(self::WARNING, ...$args); }
-    public static function error(...$args)      { return self::_logger(self::ERROR, ...$args); }
-    public static function event(...$args)      { return self::_logger(self::EVENT, ...$args); }
-    public static function critical(...$args)   { return self::_logger(self::CRITICAL, ...$args); }
-    public static function alert(...$args)      { return self::_logger(self::ALERT, ...$args); }
-    public static function emergency(...$args)  { return self::_logger(self::EMERGENCY, ...$args); }
+    /**
+     * [debug description]
+     * @param  [type] $args [description]
+     * @return [type]       [description]
+     */
+    public static function debug(...$args): void {
+        self::$logger->debug(self::_log($args));
+    }
+
+
+    /**
+     * [info description]
+     * @param  [type] $args [description]
+     * @return [type]       [description]
+     */
+    public static function info(...$args): void {
+        self::$logger->info(self::_log($args));
+    }
+
+
+    /**
+     * [notice description]
+     * @param  [type] $args [description]
+     * @return [type]       [description]
+     */
+    public static function notice(...$args): void {
+        self::$logger->notice(self::_log($args));
+    }
+
+
+    /**
+     * [warning description]
+     * @param  [type] $args [description]
+     * @return [type]       [description]
+     */
+    public static function warning(...$args): void {
+        self::$logger->warning(self::_log($args));
+    }
+
+
+    /**
+     * [error description]
+     * @param  [type] $args [description]
+     * @return [type]       [description]
+     */
+    public static function error(...$args): void {
+        self::$logger->error(self::_log($args));
+    }
+
+
+    /**
+     * [critical description]
+     * @param  [type] $args [description]
+     * @return [type]       [description]
+     */
+    public static function critical(...$args): void {
+        self::$logger->critical(self::_log($args));
+    }
+
+
+    /**
+     * [alert description]
+     * @param  [type] $args [description]
+     * @return [type]       [description]
+     */
+    public static function alert(...$args): void {
+        self::$logger->alert(self::_log($args));
+    }
+
+
+    /**
+     * [emergency description]
+     * @param  [type] $args [description]
+     * @return [type]       [description]
+     */
+    public static function emergency(...$args): void {
+        self::$logger->emergency(self::_log($args));
+    }
 
 
 }

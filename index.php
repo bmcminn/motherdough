@@ -47,9 +47,10 @@ $whoops->register();
 $today = date('Y-m-d');
 
 Logger::config([
-    'name'      => 'events',
-    'numLogs'   => is_prod() ? env('NUM_LOGS', 0) : 0,
-    'logTarget' => storage_path("logs/{$today}.dev.log"),
+    'name'      => 'app',
+    'path'      => storage_path("logs"),
+    'maxFiles'  => env('LOGGER_MAX_FILES', 0),
+    'level'     => is_dev() ? Logger::DEBUG : Logger::WARNING,
 ]);
 
 

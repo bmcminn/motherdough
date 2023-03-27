@@ -1,0 +1,29 @@
+{
+    "name": "dev/mlsdb-simple",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        },
+        "files": [
+            "src/lib/functions.php",
+            "src/lib/rb.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "bmcminn",
+            "email": "bmcminn@users.noreply.github.com"
+        }
+    ],
+    "scripts": {
+        "dev": "composer dumpautoload -o && php -S localhost:3005 -t public"
+    },
+    "require": {
+        "rakit/validation": "1.4",
+        "monolog/monolog": "3.3",
+        "slim/slim": "4.11",
+        "slim/psr7": "1.6",
+        "twig/twig": "^3.5"
+    }
+}

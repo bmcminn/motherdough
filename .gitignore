@@ -1,0 +1,7 @@
+__*/
+vendor/
+node_modules/
+storage/
+
+.container/
+*.sublime-workspace

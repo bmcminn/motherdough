@@ -5,24 +5,34 @@ namespace App\Helpers;
 
 class Email {
 
-    protected static array $data;
+
+    public static function setup(array $options = []) {
+
+    }
 
 
-    /**
-     * { function_description }
-     *
-     * @param      array  $options  The options
-     */
-    public static function setup(array $options) : void {
-        self::$data = array_replace_recursive([
+    public static function sendChangeEmail($email, $token) {
 
-        ], $options);
     }
 
 
-
-    public function render($template, $model) {
-
+    public static function sendForgotPassword($email, $token) {
+        $content = "Reset token: {$token}";
+        $headers = [
+            'from' => 'info@site.com',
+        ];
+        $success = self::composeEmail($email, 'password reset', $content, $headers);
+        return $success;
     }
+
+
+    private static function composeEmail(string $to, string $subject, string $content, array $headers = []) {
+
+        // TODO: figure out some form of content composition
+        $html = $content;
+
+        mail($to, $subject, $content, $headers);
+    }
+
 
 }

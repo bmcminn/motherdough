@@ -58,8 +58,10 @@ function getRoute(Request $req) {
 }
 
 
-function JsonBody($res, $data, int $status = 200) {
+function jsonResponse($data, int $status = 200) {
     $body = json_encode($data);
+
+    $res = new \Slim\Psr7\Response($status);
 
     $res->getBody()->write($body);
 

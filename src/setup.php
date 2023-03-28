@@ -1,13 +1,13 @@
 <?php
 
 use App\Helpers\Config;
+use App\Helpers\Hash;
 use App\Helpers\Logger;
 use App\Helpers\Session;
 use App\Helpers\Template;
 
 
 use RedBeanPHP\Facade as R;
-
 
 
 Config::setup([
@@ -26,12 +26,28 @@ Config::setup([
         'views_dir'     => path('/src/views'),
     ],
 
+    'public_routes' => [
+        'home' => '/',
+        'about' => '/about',
+        'privacy' => '/privacy-policy',
+        'terms' => '/terms-of-use',
+        'login' => '/login',
+        'logout' => '/logout',
+        'forgotpassword' => '/forgot-password',
+    ],
+
 ]);
+
+
+// SETUP HASH UTILITY
+
+Hash::setup();
+
 
 
 // DOCUMENT VARIOUS FOLDER LOCATIONS
 
-// TODO: adjust folder permissions once I can test whether it works or not
+// TODO: adjust folder permissions and can test whether it works or not
 foreach ([
     [ Config::get('paths.cache_dir'),       0666 ],
     [ Config::get('paths.database_dir'),    0666 ],

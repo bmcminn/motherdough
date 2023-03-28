@@ -26,9 +26,16 @@ $app->addErrorMiddleware(
     $logErrorDetails=true
 );
 
-// SETUP ROUTE CACHER
-$routeCollector = $app->getRouteCollector();
-$routeCollector->setCacheFile(__DIR__ . '/../storage/cache/routes.cache');
+
+if (getenv('PHP_ENV') === 'production') {
+
+    // SETUP ROUTE CACHER
+    $routeCollector = $app->getRouteCollector();
+    $routeCollector->setCacheFile(__DIR__ . '/../storage/cache/routes.cache');
+
+    // Freeze the database
+    R::freeze(TRUE);
+}
 
 
 // ADD ROUTES

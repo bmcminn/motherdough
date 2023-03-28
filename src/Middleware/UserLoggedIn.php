@@ -1,6 +1,7 @@
 <?php
 namespace App\Middleware;
 
+use App\Helpers\Config;
 use App\Helpers\Logger;
 use App\Helpers\Session;
 
@@ -21,12 +22,15 @@ class UserLoggedIn {
      * @return Response
      */
     public function __invoke(Request $req, RequestHandler $next) {
-        $route = '/' . getRoute($req)->getArgument('path');
+        $route          = '/' . getRoute($req)->getArgument('path');
 
         $userGuest      = empty($_SESSION['user_id']);
-        $isLoginPage    = in_array($route, [ '/login' ]);
 
-        if ($userGuest && !$isLoginPage) {
+        $publicRoutes   = array_values(Config::get('public_routes'));
+
+        $isPublicRoute  = in_array($route, $publicRoutes);
+
+        if ($userGuest && !$isPublicRoute) {
             return redirect('/login');
         }
 

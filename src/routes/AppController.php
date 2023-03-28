@@ -2,7 +2,7 @@
 
 use App\Template;
 use App\Middleware\UserLoggedIn;
-
+use App\Helpers\Config;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -17,8 +17,21 @@ class AppController {
     public function app (Request $req, Response $res) {
         $body = 'home';
 
-        $body = file_get_contents(__DIR__ . '/../../public/index.html');
-        // $body = Template::render('app');
+        $filepath = path('/public/index.html');
+        $body = file_get_contents($filepath);
+
+        $routes = json_encode([
+            'routes' => Config::get('public_routes'),
+        ]);
+
+        $src = <<<SRC
+            <script>
+                window.AppConfig = $routes
+            </script>
+        SRC;
+
+        $body = preg_replace('/<!--PHPINCLUDE-->/i', trim($src), $body);
+
         $res->getBody()->write($body);
 
         return $res;
@@ -26,25 +39,8 @@ class AppController {
 
 
 }
-// $app->get('/', function() {
-//     return 'render homepage';
-// })->auth();
 
 
 $app->get('/{path:.*}', AppController::class . ':app')
-    ->add(App\Middleware\UserLoggedIn::class)
+    ->add(\App\Middleware\UserLoggedIn::class)
 ;
-
-
-// $app->get('/{path:.*}', function (Request $req, Response $res) {
-//     $model = ['name' => 'thing'];
-
-//     $body = file_get_contents(__DIR__ . '/../public/index.html');
-//     // $body = Template::render('app');
-//     // $body = 'wefsjekl';
-//     $res->getBody()->write($body);
-
-//     return $res;
-// })
-//     ->add(App\Middleware\UserLoggedIn::class)
-// ;

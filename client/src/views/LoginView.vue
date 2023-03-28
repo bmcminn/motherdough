@@ -1,20 +1,64 @@
 <template>
-  <div class="login">
-    <h1>This is an login page</h1>
-    <form action="">
+    <div class="login">
+        <h1>This is an login page</h1>
 
-        <input type="email">
-    </form>
+        <FormKit type="form"
+            @submit="handleLogin"
+        >
+            <FormKit type="email"
+                name="email"
+                label="Email"
+                :value="testEmail"
+                required
+            />
 
-  </div>
+            <FormKit type="password"
+                label="Password"
+                name="password"
+                :value="testPassword"
+                required
+            />
+        </FormKit>
+
+        <RouterLink :to="{path: 'forgotpassword'}">
+            Forgot password?
+        </RouterLink>
+    </div>
 </template>
 
+
 <style>
-@media (min-width: 1024px) {
-  .login {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
+
 </style>
+
+
+<script setup>
+
+    import { Api } from '@/http.js'
+
+    const testEmail = 'bob@law.blah'
+    const testPassword = 'testing123'
+
+
+    async function handleLogin(e) {
+        console.log(e)
+
+        const { email, password } = e
+
+        let res
+
+        try {
+            res = await Api.post('auth/login', {
+                email, password
+            })
+        } catch(err) {
+            console.error(err)
+        }
+
+        console.log(res)
+
+
+
+    }
+
+</script>

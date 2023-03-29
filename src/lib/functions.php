@@ -52,6 +52,12 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Routing\RouteContext;
 
+
+function uuid4() {
+    return Ramsey\Uuid\Uuid::uuid4()->toString();
+}
+
+
 function getRoute(Request $req) {
     $ctx = RouteContext::fromRequest($req);
     return $ctx->getRoute();

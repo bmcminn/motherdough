@@ -1,6 +1,5 @@
 {
   "name": "motherdough",
-    "license": "MIT",
   "version": "0.0.1",
   "description": "A REST API starter kit built on PHP 8.1+ and Vue 3",
   "scripts": {
@@ -12,7 +11,7 @@
     "postinstall": "composer install && npm run client -- install"
   },
   "author": "bmcminn <bmcminn@users.noreply.github.com>",
-  "license": "beerware",
+  "license": "MIT",
   "devDependencies": {
     "concurrently": "^7.6.0"
   }

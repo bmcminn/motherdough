@@ -71,10 +71,17 @@ Start making changes and refresh to see things in action.
 
 ### CLI workflow:
 
-The following
+Run the following commands in your terminal to setup the local environment:
 
 ```bash
+# Clone the github repo
 git clone https://github.com/bmcminn/motherdough ./your-project-name-here
+
+# Copy the sample .env config and fill it out as needed
+cp ./.env.sample ./.env
+
+# Install local dependencies; this will install composer
+#   and /client dependencies as well
 npm i
 ```
 

@@ -26,6 +26,7 @@
         "slim/slim": "4.11",
         "slim/psr7": "1.6",
         "twig/twig": "^3.5",
-        "ramsey/uuid": "^4.7"
+        "ramsey/uuid": "^4.7",
+        "vlucas/phpdotenv": "^5.5"
     }
 }

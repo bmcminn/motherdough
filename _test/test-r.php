@@ -8,11 +8,14 @@ use Ramsey\Uuid\Uuid;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->load();
+
 $DB_FILE = __DIR__ . '/../storage/database/main.db';
 
-print_r($DB_FILE);
-
 R::setup('sqlite:' . $DB_FILE);
+R::useFeatureSet( 'novice/latest' );
+
 
 Hash::setup();
 
@@ -22,26 +25,27 @@ $validRoles = [
 ];
 
 
-// GENERATE USER
-$user = R::dispense('user');
 
-$user->uuid         = uuid4();
-$user->createdAt    = now();
+function test_createUserSession() {
+    // FIND USER
+    $email = $_ENV['TEST_USER_EMAIL'];
+    $user = R::findOne('user', ' email = ?', [ $email ]);
 
-R::store($user);
+    // GENERATE USER SESSION
+    $session = R::dispense('usersession');
+
+    $session->uuid      = uuid4();
+    $session->userUuid  = $user->uuid;
+
+    // TODO: change now() to a DateTime() conversion _OR_ R::isoDate()
+    $session->createdAt = now();
+    $session->expiresAt = now() + hours(24);
+
+    R::store($session);
+}
 
 
-// GENERATE USER SESSION
-$session = R::dispense('user_session');
-
-$session->uuid      = uuid4();
-$session->userUuid  = $user->uuid;
-
-$session->createdAt = now();
-$session->expiresAt = now() + hours(24);
-
-R::store($session);
-
+test_createUserSession();
 
 //
 
@@ -49,22 +53,19 @@ R::store($session);
 
 
 function newAdmin($options) {
-    $password = 'Testing123';
-
     $user = R::dispense('user');
-    $user->dateofbirth  = '1990-01-01';
-    $user->email        = 'bob@law.blah';
-    $user->email_base   = 'bob@law.blah';
-    $user->firstname    = 'Bob';
-    $user->lastname     = 'Lawblah';
-    $user->name         = 'Bob Lawblah';
-    $user->password     = Hash::password($password);
+    $user->dateofbirth  = $_ENV['TEST_USER_DOB'];
+    $user->email        = $_ENV['TEST_USER_EMAIL'];
+    $user->email_base   = $_ENV['TEST_USER_EMAIL'];
+    $user->firstname    = $_ENV['TEST_USER_FIRST'];
+    $user->lastname     = $_ENV['TEST_USER_LAST'];
+    $user->name         = $_ENV['TEST_USER_FIRST'] . ' ' . $_ENV['TEST_USER_LAST'];
+    $user->password     = Hash::password($_ENV['TEST_USER_PASS']);
     $user->roles        = implode('|', $validRoles);
 
     $user->createdAt    = now();
     $user->updatedAt    = null;
     $user->deletedAt    = null;
-
 
     $id = R::store($user);
 

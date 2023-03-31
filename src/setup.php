@@ -48,6 +48,7 @@ Hash::setup();
 // DOCUMENT VARIOUS FOLDER LOCATIONS
 
 // TODO: adjust folder permissions and can test whether it works or not
+// TODO: abstract this to its own postinstall script to scaffold out folder structure
 foreach ([
     [ Config::get('paths.cache_dir'),       0666 ],
     [ Config::get('paths.database_dir'),    0666 ],

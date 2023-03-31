@@ -1,20 +1,23 @@
 {
+    "name": "Waffles",
 	"folders":
 	[
 		{
 			"path": ".",
             "folder_exclude_patterns": [
-                "vendor",
-                "node_modules",
-                "__*/",
                 ".container/",
-                "storage/cache",
+                ".git",
                 ".vscode",
+                "__*/",
+                "node_modules",
+                "storage/cache",
+                "storage/database",
+                "vendor",
             ],
             "file_exclude_patterns": [
                 "*.lock*",
                 "*.sublime-workspace",
-                "autload_*"
+                "autload_*",
             ],
 		}
 	]

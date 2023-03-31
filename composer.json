@@ -1,6 +1,7 @@
 {
-    "name": "dev/mlsdb-simple",
+    "name": "bmcminn/motherdough",
     "type": "project",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "App\\": "src/"

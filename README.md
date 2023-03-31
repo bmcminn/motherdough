@@ -12,9 +12,9 @@ This repo is monolithic by design, but is built in a way that you could split it
 
 ## Disclaimer:
 
-This is a personal project starter for myself. If you feel there is a missing core feature or something fundamentally broken, feel free to post an issue or issue a PR about it.
+This is a personal project starter for myself. If you also like it, great! If you feel there is a missing core feature or something fundamentally broken with it, feel free to post an issue or issue a PR about it.
 
-However, just because an issue or PR is submitted doesn't mean I will implement/accept.
+However, just because an issue or PR is submitted doesn't mean I will implement/accept it as I have my own goals for this framework, and you are more than welcome to fork this as you see fit.
 
 
 ## Features:

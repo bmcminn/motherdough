@@ -8,7 +8,7 @@
     "dev-server": "composer run dev",
     "dev-client": "npm run client -- run build -- --watch",
     "client": "npm --prefix ./client",
-    "postinstall": "composer install && npm run client -- install"
+    "--postinstall": "composer install && npm run client -- install"
   },
   "author": "bmcminn <bmcminn@users.noreply.github.com>",
   "license": "MIT",

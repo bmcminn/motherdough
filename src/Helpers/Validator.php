@@ -5,6 +5,8 @@ namespace App\Helpers;
 use ErrorException;
 use App\Models\User;
 
+use RedBeanPHP\Facade as R;
+
 /**
  * This class provides static methods for rendering templates.
  */
@@ -28,9 +30,9 @@ class Validator {
     public static function validate(array $data, array $rules) : array {
         $validator = new \Rakit\Validation\Validator();
 
-        $validator->addValidator('unique', new UniqueRule());
-        $validator->addValidator('unique_email', new UniqueEmailRule());
-        $validator->addValidator('min_age', new MinAgeRule());
+        $validator->addValidator('unique',          new UniqueRule());
+        $validator->addValidator('unique_email',    new UniqueEmailRule());
+        $validator->addValidator('min_age',         new MinAgeRule());
 
         $validators = [];
         $sanitizers = [];
@@ -142,7 +144,7 @@ class UniqueRule extends Rule {
         $res = R::findOne($table, "{$column} = ?", [ $value ]);
 
         // true for valid, false for invalid
-        return !!$res;
+        return !!!$res;
     }
 }
 
@@ -158,10 +160,6 @@ class UniqueEmailRule extends Rule {
     public function check($value) : bool {
         // do query
         $user = User::findByEmail($value);
-
-        // echo !!!$user ? 'TRUE' : 'FALSE';
-        // exit;
-
 
         // true for valid, false for invalid
         return !!!$user;

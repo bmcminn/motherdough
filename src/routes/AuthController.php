@@ -26,7 +26,7 @@ class AuthController {
         $minAge = Config::get('registration.min_age');
 
         $data = Validator::validate($body, [
-            [ 'email',              'required|unique_email',        'email' ],
+            [ 'email',              'required|unique:user,email',   'email' ],
             // TODO: password, add not_invalid rule to check against known compromised passwords
             [ 'password',           'required|min:8',               FILTER_SANITIZE_STRING ],
             [ 'password_confirm',   'required|same:password',       FILTER_SANITIZE_STRING ],

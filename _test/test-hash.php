@@ -8,7 +8,7 @@ require __DIR__ . '/../vendor/autoload.php';
 Hash::setup();
 
 
-$password = 'couldyoufuckingnot?';
+$password = 'testpassword';
 
 $hash = Hash::password($password);
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Models;
 
 
 use RedBeanPHP\Facade as R;

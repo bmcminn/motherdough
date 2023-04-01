@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use App\Helpers\Config;
+
 
 class Email {
 
@@ -11,17 +13,22 @@ class Email {
     }
 
 
-    public static function sendChangeEmail($email, $token) {
+    public static function sendVerificationEmail(string $email, array $data = []) {
 
     }
 
 
-    public static function sendForgotPassword($email, $token) {
+    public static function sendChangeEmail(string $email, $token) {
+
+    }
+
+
+    public static function sendForgotPassword(string $email, $token) {
         $content = "Reset token: {$token}";
         $headers = [
             'from' => 'info@site.com',
         ];
-        $success = self::composeEmail($email, 'password reset', $content, $headers);
+        $success = self::composeEmail($email, 'Password reset', $content, $headers);
         return $success;
     }
 

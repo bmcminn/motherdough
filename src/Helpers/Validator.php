@@ -3,7 +3,7 @@
 namespace App\Helpers;
 
 use ErrorException;
-
+use App\Models\User;
 
 /**
  * This class provides static methods for rendering templates.
@@ -25,8 +25,12 @@ class Validator {
      *
      * @return     array        ( description_of_the_return_value )
      */
-    public static function validate(array &$data, array &$rules) : array {
+    public static function validate(array $data, array $rules) : array {
         $validator = new \Rakit\Validation\Validator();
+
+        $validator->addValidator('unique', new UniqueRule());
+        $validator->addValidator('unique_email', new UniqueEmailRule());
+        $validator->addValidator('min_age', new MinAgeRule());
 
         $validators = [];
         $sanitizers = [];
@@ -42,9 +46,12 @@ class Validator {
         // VALIDATE THE INPUTS
         $validation = $validator->make($data, $validators);
 
+        $validation->validate();
+
         if ($validation->fails()) {
-            // handling errors
-            return $validation->errors();
+            return [
+                'messages' => $validation->errors()->toArray(),
+            ];
         }
 
 
@@ -56,7 +63,8 @@ class Validator {
 
                 switch($sanitizer) {
                     case 'email':
-                        self::sanitizeEmail($data, $key);
+                        $data[$key]         = self::sanitizeEmail($data[$key]);
+                        $data[$key.'_base'] = self::stripEmailSubaddress($data[$key]);
                         break;
                     default:
                         throw new \ErrorException("Missing \$sanitizer method for '$sanitizer'.");
@@ -86,41 +94,99 @@ class Validator {
      * @param      array    $data   The data
      * @param      string   $key    The key
      */
-    private static function sanitizeEmail(array &$data, string $key) {
-        $email = filter_var($data[$key], FILTER_SANITIZE_EMAIL);
-
-        $data[$key] = $email;
+    public static function sanitizeEmail(string $email) : string {
+        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
 
         // ASCII filtering based on https://stackoverflow.com/a/22786548/3708807
         $email = iconv('UTF-8', 'ASCII//TRANSLIT', $email);
 
+        return strtolower($email);
+    }
+
+
+    public static function stripEmailSubaddress(string $email) : string {
         // remove +subaddress and return raw base email string
         $email = preg_replace('/\+[\s\S]+?\@/', '@', $email);
 
-        $data[$key . '_base'] = $email;
+        return $email;
     }
 
+}
 
 
-    // ----------------------------------------
-    //  PUBLIC VALIDATION MODELS
-    // ----------------------------------------
 
+use Rakit\Validation\Rule;
 
-    /**
-     * Run Template thorugh its initial configuration.
-     *
-     * @param   array   $options    The options
-     */
-    public static function loginModel(array &$data) : array {
+class UniqueRule extends Rule {
+    protected $message = ":attribute :value has been used";
 
-        $rules = [
-            [ 'email',      'required',         'email' ],
-            [ 'password',   'required|min:8',   FILTER_SANITIZE_STRING ],
-        ];
+    protected $fillableParams = ['table', 'column', 'except'];
 
-        return self::validate($data, $rules);
+    public function __construct() {
     }
 
+    public function check($value) : bool {
+        // make sure required parameters exists
+        $this->requireParameters(['table', 'column']);
 
+        // getting parameters
+        $column = $this->parameter('column');
+        $table = $this->parameter('table');
+        $except = $this->parameter('except');
+
+        if ($except && $except == $value) {
+            return true;
+        }
+
+        // do query
+        $res = R::findOne($table, "{$column} = ?", [ $value ]);
+
+        // true for valid, false for invalid
+        return !!$res;
+    }
+}
+
+class UniqueEmailRule extends Rule {
+
+    protected $message = ":attribute :value has been used";
+
+    // protected $fillableParams = [ ];
+
+    public function __construct() {
+    }
+
+    public function check($value) : bool {
+        // do query
+        $user = User::findByEmail($value);
+
+        // echo !!!$user ? 'TRUE' : 'FALSE';
+        // exit;
+
+
+        // true for valid, false for invalid
+        return !!!$user;
+    }
+}
+
+
+class MinAgeRule extends Rule {
+    protected $message = ":attribute :value must be before :date";
+
+    protected $fillableParams = [ 'min_age' ];
+
+    public function __construct() {
+    }
+
+    public function check($value) : bool {
+        // make sure required parameters exists
+        $this->requireParameters(['min_age']);
+
+        // getting parameters
+        $minAge = $this->parameter('min_age');
+
+        $beforeDate = '-' . $minAge . ' years';
+        $before = (new \DateTime($beforeDate))->format('Y-m-d H:i:s');
+
+        return $value < $before;
+    }
 }

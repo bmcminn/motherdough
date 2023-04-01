@@ -1,4 +1,26 @@
+# // TODO: evaluate possible improvements from:
+#   - https://perishablepress.com/stupid-htaccess-tricks/
+#   - https://github.com/h5bp/server-configs-apache/blob/main/dist/.htaccess
+
+
+
+
 RewriteEngine On
+
+# # Redirect www to non-www
+# Options +FollowSymLinks
+# RewriteCond %{HTTP_HOST} ^www\.domain\.tld$ [NC]
+# RewriteRule (.*) http://domain.tld/$1 [R=301,L]
+
+# redirect to router file
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
+
+
+# diguise all file extensions as php
+ForceType application/x-httpd-php
+
+
+# protect against DOS attacks by limiting file upload size
+LimitRequestBody 10240000

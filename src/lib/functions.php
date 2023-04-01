@@ -53,10 +53,6 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Routing\RouteContext;
 
 
-function uuid4() {
-    return Ramsey\Uuid\Uuid::uuid4()->toString();
-}
-
 
 function getRoute(Request $req) {
     $ctx = RouteContext::fromRequest($req);
@@ -64,10 +60,10 @@ function getRoute(Request $req) {
 }
 
 
-function jsonResponse($data, int $status = 200) {
+function jsonResponse($data, int $status = 200, $res = null) {
     $body = json_encode($data);
 
-    $res = new \Slim\Psr7\Response($status);
+    $res = $res ?? new \Slim\Psr7\Response($status);
 
     $res->getBody()->write($body);
 
@@ -102,4 +98,10 @@ function dbg() {
     }
 
     file_put_contents('php://stdout', implode("\n", $msg) . "\n");
+}
+
+
+
+function uuid4() {
+    return Ramsey\Uuid\Uuid::uuid4()->toString();
 }

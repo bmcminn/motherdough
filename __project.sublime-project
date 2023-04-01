@@ -4,6 +4,11 @@
 	[
 		{
 			"path": ".",
+            // "folder_include_patterns": [
+            //     "client/",
+            //     "client/public/",
+            //     "src/",
+            // ],
             "folder_exclude_patterns": [
                 ".container/",
                 ".git",

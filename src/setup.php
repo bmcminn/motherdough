@@ -3,11 +3,32 @@
 use App\Helpers\Config;
 use App\Helpers\Hash;
 use App\Helpers\Logger;
-use App\Helpers\Session;
 use App\Helpers\Template;
+use App\Helpers\Validator;
 
+use App\Models\Session;
 
 use RedBeanPHP\Facade as R;
+
+
+
+define('HTTP_SUCCESS', 200);
+define('HTTP_CREATED', 201);
+
+define('HTTP_MOVED_PERMANENTLY', 301);
+define('HTTP_MOVED_TEMPORARILY', 302);
+define('HTTP_PERMANENT_REDIRECT', 302);
+
+define('HTTP_BAD_REQUEST', 400);
+define('HTTP_UNAUTHORIZED', 401);
+define('HTTP_PAYMENT_REQUIRED', 402);
+define('HTTP_FORBIDDEN', 403);
+define('HTTP_NOT_FOUND', 404);
+define('HTTP_RATE_LIMITED', 429);
+
+define('HTTP_SERVER_ERROR', 500);
+
+
 
 
 Config::setup([
@@ -15,6 +36,10 @@ Config::setup([
         'name' => 'MLSDB',
         'established' => 2023,
         'copyright' => 'Gbox Studios',
+    ],
+
+    'registration' => [
+        'min_age' => 18,
     ],
 
     'paths' => [
@@ -42,7 +67,6 @@ Config::setup([
 // SETUP HASH UTILITY
 
 Hash::setup();
-
 
 
 // DOCUMENT VARIOUS FOLDER LOCATIONS
@@ -85,4 +109,4 @@ Template::setup([
 
 
 R::setup('sqlite:' . Config::get('paths.database_file'));
-// R::useFeatureSet(Config::ORM_FEATURES);
+R::useFeatureSet( 'novice/latest' );

@@ -1,0 +1,6 @@
+
+<mj-text align="center" color="#ff9900"
+    css-class="text"
+>
+    If you did not trigger this email, or feel you have received this email in error, feel free to ignore this email, or contact our <a href="mailto:{{company.emails.security}}">security team</a> to inform them.
+</mj-text>

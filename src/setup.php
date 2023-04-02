@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\Config;
+use App\Helpers\Email;
 use App\Helpers\Hash;
 use App\Helpers\Logger;
 use App\Helpers\Template;
@@ -9,7 +10,6 @@ use App\Helpers\Validator;
 use App\Models\Session;
 
 use RedBeanPHP\Facade as R;
-
 
 
 define('HTTP_SUCCESS', 200);
@@ -27,8 +27,6 @@ define('HTTP_NOT_FOUND', 404);
 define('HTTP_RATE_LIMITED', 429);
 
 define('HTTP_SERVER_ERROR', 500);
-
-
 
 
 Config::setup([
@@ -85,12 +83,17 @@ foreach ([
 }
 
 
+Email::setup([
+    'smtp' => [
+        'from' => '',
+    ],
+]);
+
 
 Logger::setup([
     'logs_path' => Config::get('paths.logs_dir'),
-    'max_logs' => 20,
+    'max_logs'  => 20,
 ]);
-
 
 
 Session::setup([
@@ -98,14 +101,12 @@ Session::setup([
 ]);
 
 
-
 Template::setup([
-    'model' => Config::get(),
-    'ext'   => '.twig',
+    'model'     => Config::get(),
+    'ext'       => '.twig',
     'cache_dir' => path(Config::get('paths.cache_dir') . '/views'),
     'views_dir' => Config::get('paths.views_dir'),
 ]);
-
 
 
 R::setup('sqlite:' . Config::get('paths.database_file'));

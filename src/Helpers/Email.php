@@ -3,18 +3,28 @@
 namespace App\Helpers;
 
 use App\Helpers\Config;
+use App\Helpers\Template;
 
 
 class Email {
 
+    private static array $config = [];
+
 
     public static function setup(array $options = []) {
+        self::$config = array_replace_recursive([
 
+        ], $options);
     }
 
 
-    public static function sendVerificationEmail(string $email, array $data = []) {
+    public static function sendVerificationEmail(string $email, array $data = []) : bool {
+        $success = true;
 
+
+
+
+        return $success;
     }
 
 

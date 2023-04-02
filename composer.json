@@ -18,7 +18,8 @@
         }
     ],
     "scripts": {
-        "dev": "composer dumpautoload -o && php -S localhost:3005 -t public"
+        "dev": "composer dumpautoload -o && php -S localhost:3005 -t public",
+        "phpstan": "phpstan analyse src"
     },
     "require": {
         "rakit/validation": "1.4",
@@ -28,5 +29,8 @@
         "twig/twig": "^3.5",
         "ramsey/uuid": "^4.7",
         "vlucas/phpdotenv": "^5.5"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.10"
     }
 }

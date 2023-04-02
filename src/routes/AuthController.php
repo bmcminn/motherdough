@@ -26,8 +26,8 @@ class AuthController {
         $minAge = Config::get('registration.min_age');
 
         $data = Validator::validate($body, [
-            [ 'email',              'required|unique:user,email',   'email' ],
-            // TODO: password, add not_invalid rule to check against known compromised passwords
+            [ 'email',              'required|email|unique:user,email',   'email' ],
+            // TODO: password, add not_invalid rule to check against knlown compromised passwords
             [ 'password',           'required|min:8',               FILTER_SANITIZE_STRING ],
             [ 'password_confirm',   'required|same:password',       FILTER_SANITIZE_STRING ],
             [ 'dateofbirth',        "required|min_age:{$minAge}",   FILTER_SANITIZE_STRING ],
@@ -44,6 +44,7 @@ class AuthController {
         // send verification email
         // TODO: finish integrating email verification email
         Email::sendVerificationEmail(Token::generateSHA512());
+
 
 
         return jsonResponse($data);
@@ -64,9 +65,17 @@ class AuthController {
         ]);
 
         $data['debug'] = $body;
-        $data['message'] = $success;
+        // $data['message'] = $success;
 
         return jsonResponse($data);
+    }
+
+
+    public function otpVerify(Request $req, Response $res) : Response {
+
+        $res->getBody()->write('logout');
+        return $res;
+
     }
 
 
@@ -94,6 +103,7 @@ class AuthController {
 $app->group('/api/auth', function($api) {
     $api->post('/register',                 AuthController::class . ':register');
     $api->post('/login',                    AuthController::class . ':login');
+    $api->post('/login/otp-verify',         AuthController::class . ':otpVerify');
     $api->post('/logout',                   AuthController::class . ':logout');
     $api->post('/password-reset',           AuthController::class . ':passwordReset');
     $api->get('/password-verify/:token',    AuthController::class . ':passwordVerify');

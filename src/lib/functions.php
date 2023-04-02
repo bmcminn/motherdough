@@ -1,7 +1,27 @@
 <?php
 
 
-define('DS', DIRECTORY_SEPARATOR);
+if (!defined('DS')) { define('DS', DIRECTORY_SEPARATOR); }
+
+
+function env($key, $default=null) {
+    $value = $_ENV[$key] ?? null;
+    // $value = getenv($key);
+
+    if (!$value && $default) {
+        return $default;
+    }
+
+    if ($value === 'true') {
+        return true;
+    }
+
+    if ($value === 'false') {
+        return false;
+    }
+
+    return $value;
+}
 
 
 function now() {
@@ -40,7 +60,7 @@ use \Slim\Psr7\Response;
 
 function redirect(string $path, int $status=302) : Response {
     if ($status < 300 || 399 < $status) {
-        throw new ErrorExeception('redirect() $status must be a 3XX status code; ');
+        throw new Error("redirect(\$path, \$status = $status) \$status must be a 3XX status code;");
     }
 
     $res = new Response($status);
@@ -50,12 +70,10 @@ function redirect(string $path, int $status=302) : Response {
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Slim\Routing\RouteContext;
-
 
 
 function getRoute(Request $req) {
-    $ctx = RouteContext::fromRequest($req);
+    $ctx = Slim\Routing\RouteContext::fromRequest($req);
     return $ctx->getRoute();
 }
 
@@ -104,4 +122,22 @@ function dbg() {
 
 function uuid4() {
     return Ramsey\Uuid\Uuid::uuid4()->toString();
+}
+
+
+
+function generateOtp(int $length = 6) : string {
+    if ($length <= 0) {
+        throw new Error("generateOtp(\$length = $length): \$length must be a positive integer.");
+    }
+
+    $length = floor($length);
+
+    $otp = '';
+
+    for ($i=0; $i < $length; $i++) {
+        $otp .= rand(0, 9);
+    }
+
+    return $otp;
 }

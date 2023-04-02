@@ -1,13 +1,13 @@
 # local directories
-__*/
-vendor/
+__*
+.container/
 node_modules/
 storage/
+vendor/
 
 # local files
 .env
 !.env.sample
-.container/
 
 # Logs
 logs

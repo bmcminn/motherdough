@@ -1,0 +1,14 @@
+<mj-text align="center"
+    padding="25px"
+    font-size="30px"
+>
+    {{otp}}
+</mj-text>
+
+<mj-text align="center"
+css-class="text"
+>
+    Enter this code on the login screen to confirm your identity.
+    <br><br>
+    Note: Do not share this code with anyone. {{company.name}} employees will not ask you for this code.
+</mj-text>

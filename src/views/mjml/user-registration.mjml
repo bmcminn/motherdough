@@ -1,0 +1,54 @@
+<mjml>
+    <mj-head>
+        <mj-style inline="inline">
+            .text div {
+                font-size: 13px !important;
+                line-height: 18px !important;
+                color: #f99;
+            }
+        </mj-style>
+    </mj-head>
+    <mj-body background-color="#f0f0f0">
+
+        <mj-section>
+            <mj-column padding="20px">
+            </mj-column>
+        </mj-section>
+
+        <mj-section background-color="#ffffff"
+            border-radius="3px"
+        >
+            <mj-column>
+                <mj-text align="center"
+                    font-size="25px"
+                    font-weight="bold"
+                >
+                    Thank you for registering!
+                </mj-text>
+
+                <mj-text align="center"
+                    css-class="text"
+                >
+                    Hello {{user.name}}, and congratulations on setting up your account!
+                </mj-text>
+
+                <mj-include path="./partials/otp.mjml" />
+
+                <mj-text align="center"
+                    css-class="text"
+                >
+                    We hope you enjoy using {{app.name}}, and if you have any trouble please feel free review our <a href="{{company.links.faq}}">FAQ page</a> or contact our <a href="mailto:{{company.emails.support}}">support team</a>.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+
+        <mj-include path="./partials/footer.mjml" />
+
+    </mj-body>
+
+
+</mjml>
+
+-----
+
+This is standard text content

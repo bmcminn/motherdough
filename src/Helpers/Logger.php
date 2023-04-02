@@ -49,7 +49,7 @@ class Logger {
 
         foreach ($parts as $part) {
             if (!isset($value[$part])) {
-                throw new ErrorException("key path does not exist ($key)");
+                throw new \ErrorException("key path does not exist ($key)");
             }
 
             $value = $value[$part];
@@ -96,11 +96,11 @@ class Logger {
      *
      * @return Logger
      */
-    protected static function configureInstance() {
+    protected static function configureInstance() : void {
         $dir = self::getDirectory();
 
         if (!file_exists($dir)) {
-            mkdir($dir, 0777, true);
+            mkdir($dir, 0644, true);
         }
 
         $name = self::getName();

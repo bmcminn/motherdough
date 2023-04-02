@@ -45,7 +45,7 @@ class Config {
 
         foreach ($parts as $part) {
             if (!isset($value[$part])) {
-                throw new ErrorException("key path does not exist ($key)");
+                throw new \ErrorException("key path does not exist ($key)");
             }
 
             $value = $value[$part];

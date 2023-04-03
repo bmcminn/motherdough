@@ -8,22 +8,10 @@ use Ramsey\Uuid\Uuid;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->load();
-
-$DB_FILE = __DIR__ . '/../storage/database/main.db';
-
-R::setup('sqlite:' . $DB_FILE);
-R::useFeatureSet( 'novice/latest' );
-
-
-Hash::setup();
-
 
 $validRoles = [
     'admin', 'user', 'super', 'moderator',
 ];
-
 
 
 function test_createUserSession() {
@@ -48,8 +36,6 @@ function test_createUserSession() {
 test_createUserSession();
 
 //
-
-
 
 
 function newAdmin($options) {

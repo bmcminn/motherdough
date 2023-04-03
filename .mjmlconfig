@@ -1,0 +1,11 @@
+{
+  "packages": [],
+  "options": {
+    "minify": true,
+    "minifyOptions": {
+      "minifyCSS": true
+    },
+    "fonts": {},
+    "keepComments": false
+  }
+}

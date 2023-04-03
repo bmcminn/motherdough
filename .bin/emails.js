@@ -10,12 +10,12 @@ const args = yargs.argv
 
 
 const opts = {
-    outputDir:      args.o ?? 'emails',
-    testOutputDir:  args.t ?? '__emails',
-    watch:          args.w ?? 'views/mjml',
-    outputExt:      args.ext ?? '.twig',
+    outputDir:      args.o      ?? 'emails',
+    testOutputDir:  args.t      ?? '__emails',
+    watch:          args.w      ?? 'src/views/mjml',
+    outputExt:      args.ext    ?? '.twig',
     minify:         args.minify ?? true,
-    build:          args.build ?? false,
+    build:          args.build  ?? false,
 }
 
 
@@ -49,8 +49,7 @@ const minifyOptions = {
 
 
 const watchPath = path.resolve(process.cwd(), opts.watch)
-
-const watcher = chokidar.watch(`${watchPath}/**/*.mjml`)
+const watcher   = chokidar.watch(`${watchPath}/**/*.mjml`)
 
 const filepaths = []
 
@@ -74,7 +73,10 @@ async function render(filepath) {
             console.error(err.formattedMessage)
         })
 
-        if (res.errors.length > 0) { return }
+        if (res.errors.length > 0) {
+            console.log(res.errors)
+            return
+        }
 
         fs.mkdir(testpath, { recursive: true })
         fs.mkdir(renderpath, { recursive: true })

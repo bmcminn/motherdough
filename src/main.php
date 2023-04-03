@@ -7,8 +7,8 @@ use Slim\Factory\AppFactory;
 require __DIR__ . '/../vendor/autoload.php';
 
 
-// INITIALIZE SERVICES SETUP
-require __DIR__ . '/setup.php';
+// // INITIALIZE SERVICES SETUP
+// require __DIR__ . '/setup.php';
 
 
 // INIT APPLICATION

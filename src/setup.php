@@ -1,7 +1,6 @@
 <?php
 
 use App\Helpers\Config;
-use App\Helpers\Email;
 use App\Helpers\Hash;
 use App\Helpers\Logger;
 use App\Helpers\Template;
@@ -10,6 +9,10 @@ use App\Helpers\Validator;
 use App\Models\Session;
 
 use RedBeanPHP\Facade as R;
+
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->load();
 
 
 define('HTTP_SUCCESS', 200);
@@ -30,6 +33,22 @@ define('HTTP_SERVER_ERROR', 500);
 
 
 Config::setup([
+
+    'company' => [
+        'name'      => '',
+        'legalName' => '',
+        'phone'     => '',
+        'email'     => '',
+
+        'address' => [
+            'street1'   => '',
+            'street2'   => '',
+            'city'      => '',
+            'state'     => '',
+            'zipcode'   => '',
+        ],
+    ],
+
     'app' => [
         'name' => 'MLSDB',
         'established' => 2023,
@@ -50,13 +69,34 @@ Config::setup([
     ],
 
     'public_routes' => [
-        'home' => '/',
-        'about' => '/about',
-        'privacy' => '/privacy-policy',
-        'terms' => '/terms-of-use',
-        'login' => '/login',
-        'logout' => '/logout',
-        'forgotpassword' => '/forgot-password',
+        // PUBLIC CONTENT PAGES
+        'home'              => '/',
+        'about'             => '/about',
+        'privacy'           => '/privacy-policy',
+        'terms'             => '/terms-of-use',
+
+        // AUTH ROUTES
+        'login'             => '/login',
+        'logout'            => '/logout',
+        'register'          => '/register',
+        'passwordreset'     => '/password-reset',
+        'verification'      => '/verification',
+
+        // DASHBOARD ROUTES
+
+    ],
+
+    'emails' => [
+        'smtp' => [
+            'debug'     => true,
+            'enabled'   => true,
+            'host'      => 'smtp.example.com',
+            'auth'      => true,
+            'username'  => 'user@example.com',
+            'password'  => 'secret',
+            'secure'    => true,
+            'port'      => 465,
+        ],
     ],
 
 ]);
@@ -78,16 +118,10 @@ foreach ([
     [ Config::get('paths.sessions_dir'),    0666 ],
     [ Config::get('paths.views_dir'),       0666 ],
 ] as $path) {
-    if (is_dir($path[0])) { continue; }
-    mkdir($path[0], $path[1], true);
+    [ $filepath, $permissions ] = $path;
+    if (is_dir($filepath)) { continue; }
+    mkdir($filepath, $permissions, true);
 }
-
-
-Email::setup([
-    'smtp' => [
-        'from' => '',
-    ],
-]);
 
 
 Logger::setup([

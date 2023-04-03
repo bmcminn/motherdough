@@ -43,11 +43,21 @@ class AuthController {
 
         // send verification email
         // TODO: finish integrating email verification email
-        Email::sendVerificationEmail(Token::generateSHA512());
 
+        $token = generateOTP();
 
+        $_SESSION['token'] = $token;
 
-        return jsonResponse($data);
+        $model = [
+            'user'  => $user,
+            'token' => $token,
+        ];
+
+        // Email::sendVerificationEmail($model);
+
+        return jsonResponse([
+            'message' => 'success',
+        ]);
     }
 
 

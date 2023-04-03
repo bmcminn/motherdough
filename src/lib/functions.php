@@ -126,18 +126,59 @@ function uuid4() {
 
 
 
-function generateOtp(int $length = 6) : string {
-    if ($length <= 0) {
-        throw new Error("generateOtp(\$length = $length): \$length must be a positive integer.");
-    }
+define('OTP_ALPHANUMERIC',      00000001);
+define('OTP_ALPHA',             00000010);
+define('OTP_NUMERIC',           00000100);
+define('OTP_MIXED_CASE',        00001000);
+// define('OTP_ALLOW_PUNCTUATION', 00001000);
 
-    $length = floor($length);
+function generateOTP(int $length, int $flags = 0, int $charRange = null) {
+
+    $length     = clamp($length, 2, 256);
+    $chars      = "0123456789ABCDEFGHIKLMNOPQRSTUVWXYZ_-";
+    $charRange  = $charRange ?? strlen($chars);
+    $flags      = $flags ?? OTP_ALPHANUMERIC;
+    $start      = $flags & OTP_ALPHA    ? 10 : 0;
+    $end        = $flags & OTP_NUMERIC  ? 10 : $charRange;
+
+    $charRange  = clamp($charRange, 2, $end);
 
     $otp = '';
 
     for ($i=0; $i < $length; $i++) {
-        $otp .= rand(0, 9);
+        $ci = rand($start, $end - 1);
+        $char = $chars[$ci];
+
+        if ($flags & OTP_MIXED_CASE) {
+            $char = !!rand(0,1) ? strtolower($char) : $char;
+        }
+
+        $otp .= $char;
     }
 
     return $otp;
+}
+
+
+
+/**
+ * { function_description }
+ *
+ * @param      int    $value  The value
+ * @param      int    $a      { parameter_description }
+ * @param      int    $b      { parameter_description }
+ *
+ * @throws     Error  (description)
+ *
+ * @return     int    ( description_of_the_return_value )
+ */
+function clamp( $value, $a, $b) {
+    if ($b < $a) {
+        throw new Error("clamp(\$a = $a, \$b = $b): \$b cannot be less than \$a.");
+    }
+
+    if ($value < $a) { return $a; }
+    if ($value > $b) { return $b; }
+
+    return $value;
 }

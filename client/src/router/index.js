@@ -25,7 +25,19 @@ const router = createRouter({
     {
       path: window.AppConfig.routes.login,
       name: 'login',
-      component: () => import('@/views/LoginView.vue'),
+      component: () => import('@/views/AuthView.vue'),
+    },
+
+    {
+      path: window.AppConfig.routes.register,
+      name: 'register',
+      component: () => import('@/views/AuthView.vue'),
+    },
+
+    {
+      path: window.AppConfig.routes.forgotpassword,
+      name: 'forgotpassword',
+      component: () => import('@/views/AuthView.vue'),
     },
 
   ]

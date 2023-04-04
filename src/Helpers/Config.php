@@ -57,4 +57,8 @@ class Config {
     }
 
 
+    public static function set(array $value) {
+        self::$data = array_merge_recursive(self::$data, $value);
+    }
+
 }

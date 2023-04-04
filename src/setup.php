@@ -99,7 +99,21 @@ Config::setup([
         ],
     ],
 
+
 ]);
+
+
+[$year, $month, $day] = explode('-', date('Y-m-d'));
+
+Config::set([
+    'date' => [
+        'year' => $year,
+        'month' => $month,
+        'day' => $day,
+        'full' => date('Y-m-d'),
+    ],
+]);
+
 
 
 // SETUP HASH UTILITY

@@ -39,6 +39,8 @@ class Token {
      */
     public static function generate(string $type, array $options = []) : string {
 
+        static $algos = $algos ?? hash_hmac_algos();
+
         if (empty(self::$algos)) {
             throw new \ErrorException('Token::setup() must be run before calling any generate() method.');
         }

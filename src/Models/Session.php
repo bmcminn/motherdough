@@ -25,12 +25,17 @@ class Session {
             session_save_path($options['path']);
         }
 
-        session_start();
+        self::start();
 
         if (!self::get('expires')) {
             self::set('expires', now() + $options['expires']);
         }
 
+    }
+
+
+    public static function start() {
+        session_start();
     }
 
 
@@ -40,7 +45,7 @@ class Session {
 
 
     public static function get($key) {
-        return isset($_SESSION[$key]) ? $_SESSION[$key] : false;
+        return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
     }
 
 

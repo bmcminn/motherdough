@@ -77,6 +77,9 @@ class AuthController {
         $data['debug'] = $body;
         // $data['message'] = $success;
 
+        // capture the IP address of the user that set the session for future validation
+        Session::set('ip_hash', Hash::md5($_SERVER['REMOTE_ADDR']));
+
         return jsonResponse($data);
     }
 
@@ -90,7 +93,10 @@ class AuthController {
 
 
     public function logout(Request $req, Response $res) : Response {
+        Session::destroy();
+
         $res->getBody()->write('logout');
+
         return $res;
     }
 

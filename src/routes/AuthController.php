@@ -1,7 +1,9 @@
 <?php
 
 use App\Helpers\Config;
+use App\Helpers\Hash;
 use App\Helpers\Validator;
+use App\Models\Session;
 use App\Models\User;
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -28,9 +30,9 @@ class AuthController {
         $data = Validator::validate($body, [
             [ 'email',              'required|email|unique:user,email',   'email' ],
             // TODO: password, add not_invalid rule to check against knlown compromised passwords
-            [ 'password',           'required|min:8',               FILTER_SANITIZE_STRING ],
-            [ 'password_confirm',   'required|same:password',       FILTER_SANITIZE_STRING ],
-            [ 'dateofbirth',        "required|min_age:{$minAge}",   FILTER_SANITIZE_STRING ],
+            [ 'password',           'required|min:8',               'htmlspecialchars' ],
+            [ 'password_confirm',   'required|same:password',       'htmlspecialchars' ],
+            [ 'dateofbirth',        "required|min_age:{$minAge}",   'htmlspecialchars' ],
         ]);
 
         if (isset($data['messages'])) {
@@ -71,7 +73,7 @@ class AuthController {
         // $validate = Validator::loginModel($body);
         $data = Validator::validate($body, [
             [ 'email',      'required',         'email' ],
-            [ 'password',   'required|min:8',   FILTER_SANITIZE_STRING ],
+            [ 'password',   'required|min:8',   'htmlspecialchars' ],
         ]);
 
         $data['debug'] = $body;
@@ -79,6 +81,7 @@ class AuthController {
 
         // capture the IP address of the user that set the session for future validation
         Session::set('ip_hash', Hash::md5($_SERVER['REMOTE_ADDR']));
+        Session::set('ip_hash_raw', $_SERVER['REMOTE_ADDR']);
 
         return jsonResponse($data);
     }

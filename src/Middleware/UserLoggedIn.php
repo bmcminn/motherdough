@@ -3,7 +3,7 @@ namespace App\Middleware;
 
 use App\Helpers\Config;
 use App\Helpers\Logger;
-use App\Helpers\Session;
+use App\Models\Session;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;

@@ -38,4 +38,8 @@ class Hash {
         return password_verify($value, $hash);
     }
 
+    public static function md5($value) {
+        return md5($value);
+    }
+
 }

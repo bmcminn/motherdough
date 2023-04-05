@@ -1,24 +1,74 @@
 version: '3.8'
 services:
-    apachephp:
-        container_name: apachephp
+    # php:
+    #     container_name: php
+    #     image: php
+    #     expose:
+    #         - 9000
+    #     volumes:
+    #         - .:/app
+
+    apache:
+        container_name: php-apache-dev
         image: webdevops/php-apache-dev:8.1
         working_dir: /app
-        environment:
-            docker: "true"
         links:
             - smtp4dev:smtp4dev
+        environment:
+            WEB_DOCUMENT_ROOT: /app/public
+            WEB_DOCUMENT_INDEX: index.php
+
+            LOG_STDOUT: ./var/log/app.stdout.log
+            LOG_STDERR: ./var/log/app.stderr.log
+
+            # @todo list of unwanted PHP modules, cf. https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php-apache-dev.html#php-modules
+            # PHP_DISMOD:
+
+            php.error_reporting: E_ALL
+            PHP_DISPLAY_ERRORS: 1
+
+            PHP_POST_MAX_SIZE: 80M
+            PHP_UPLOAD_MAX_FILESIZE: 200M
+            PHP_MEMORY_LIMIT: 521M
+            PHP_MAX_EXECUTION_TIME: 300
+
         ports:
+            # - 8080:80
+            # - 8080:8080
+            # - 80:80
             - 3005:80
             - 443:443
-            # - 8080:8080
-            # - 8080:80
         volumes:
             - .:/app
             - ./.container/logs:/var/www/logs
+            - ~/.composer:/home/application/.composer
             # - .docker/php.ini:/opt/bitnami/php/lib/php.ini
             # - .docker/php.ini:/usr/local/etc/php/php.ini
         restart: always
+
+
+    # apache:
+    #     container_name: apache
+    #     image: webdevops/apache:latest
+    #     environment:
+    #         - PHP_SOCKET=php:9000
+    #     links:
+    #         - php
+    #     working_dir: /app
+    #     links:
+    #         - smtp4dev:smtp4dev
+    #     ports:
+    #         # - 8080:80
+    #         # - 8080:8080
+    #         # - 80:80
+    #         - 3005:80
+    #         - 443:443
+    #     volumes:
+    #         - .:/app
+    #         - ./.container/logs:/var/www/logs
+    #         # - .docker/php.ini:/opt/bitnami/php/lib/php.ini
+    #         # - .docker/php.ini:/usr/local/etc/php/php.ini
+    #     restart: always
 
 
     smtp4dev:

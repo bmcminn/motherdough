@@ -24,6 +24,43 @@ function env($key, $default=null) {
 }
 
 
+/**
+ * Use a path query string to traverse an associative array for a given value
+ *
+ * @param      string           $keyPath  The key path
+ * @param      array            $data     The data
+ *
+ * @throws     \ErrorException  Error if key does not exist in array structure
+ *
+ * @return     any              Whatever data exists in the given $keyPath location
+ */
+function array_query(string $keyPath, array $data) {
+
+    // TODO: memcache this thing
+    // // setup memoization to trivialize future lookups
+    // static $memocache = [];
+
+    // if (isset($memocache[$key])) {
+    //     return $memocache[$key];
+    // }
+
+    $parts = explode('.', $keyPath);
+    $value = $data;
+
+    foreach ($parts as $part) {
+        if (!isset($value[$part])) {
+            throw new ErrorException("key path does not exist ($keyPath)");
+        }
+
+        $value = $value[$part];
+    }
+
+    // $memocache[$key] = $value;
+
+    return $value;
+}
+
+
 function now() {
     return floor(microtime(true) * 1000);
 }
@@ -44,6 +81,29 @@ function days() {
 function path(string $path) {
     return getcwd() . '/../' . trim($path, '/');
 }
+
+
+function url(string $path, array $query=[]) {
+
+    // $host = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_HOST'];
+
+    $scheme = $_SERVER['REQUEST_SCHEME'] ?? 'http';
+    $scheme .= '://';
+
+    $host = $_SERVER['SERVER_NAME'];
+
+    $port = $_SERVER['SERVER_PORT'];
+    $port = $port !== '80' ? ":${port}" : '';
+
+    if (!empty($query)) {
+        $query = '?' . http_build_query($query);
+    } else {
+        $query = '';
+    }
+
+    return implode([$scheme, $host, $port, $path, $query]);
+}
+
 
 
 /**

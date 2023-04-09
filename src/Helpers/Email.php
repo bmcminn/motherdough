@@ -23,9 +23,14 @@ use PHPMailer\PHPMailer\SMTP;
 class Email {
 
 
-    private static function newMessage() : PHPMailer {
+    private static function newMessage(array $model) : PHPMailer {
 
-        $smtp = Config::get('emails.smtp');
+        $model = array_replace_recursive(Config::get(), $model);
+
+        // $smtp = Config::get('emails.smtp');
+        $smtp       = array_query('emails.smtp', $model); // $model['emails']['smtp'];
+        $company    = array_query('company', $model);
+        $user       = array_query('user', $model);
 
         // Create an instance; passing `true` enables exceptions
         $mail = new PHPMailer(true);
@@ -35,13 +40,33 @@ class Email {
 
         // Enable verbose debug output
         if ($smtp['debug']) { $mail->SMTPDebug = SMTP::DEBUG_SERVER; }
-        if ($smtp['secure']) { $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; }
+
+        // $mail->SMTPSecure = $smtp['secure']
+        //     ? PHPMailer::ENCRYPTION_SMTPS
+        //     : 'Off'
+        //     ;
 
         $mail->Host     = $stmp['host'];        // Set the SMTP server to send through
         $mail->SMTPAuth = $stmp['auth'];        // Enable SMTP authentication
-        $mail->Username = $smtp['username'];    // SMTP username
-        $mail->Password = $smtp['password'];    // SMTP password
+
+        $mail->SMTPAuth     = false;                                   //Enable SMTP authentication
+        $mail->SMTPAutoTls  = false;
+
+        // $mail->Username = $smtp['username'];    // SMTP username
+        // $mail->Password = $smtp['password'];    // SMTP password
         $mail->Port     = $smtp['port'];        // TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+
+        $mail->isHTML(true);
+
+
+        $mail->setFrom($company['emailFrom'], $company['name']);
+        $mail->addAddress($user['email'], $user['fullname']);     //Add a recipient
+        // $mail->addAddress('ellen@example.com');               //Name is optional
+        $mail->addReplyTo($company['emailReply'], 'Contact');
+        // $mail->addCC('cc@example.com');
+        // $mail->addBCC('bcc@example.com');
+
 
         // $mail->isHTML(true);    //Set email format to HTML
         // $mail->Subject = 'Here is the subject';
@@ -53,37 +78,35 @@ class Email {
 
 
 
+    protected static function render($name, $model=[]) {
+        $template = Template::render($name, $model);
+
+        $template = explode('-----', $template);
+
+        return $template;
+    }
+
+
+
+
 
     public static function sendVerificationEmail(array $model = []) : bool {
         $success = true;
 
-        $company = $model['company'];
-        $user = $model['user'];
+        $company    = $model['company'];
+        $user       = $model['user'];
 
-        $mail = self::newMessage();
+        $mail = self::newMessage($model);
 
         try {
 
-            $mail->isHTML(true);
-
-            $mail->setFrom('from@example.com', 'Mailer');
-            $mail->addAddress($user['email'], $user['fullname']);     //Add a recipient
-            // $mail->addAddress('ellen@example.com');               //Name is optional
-            $mail->addReplyTo('contact@example.com', 'Information');
-            $mail->addCC('cc@example.com');
-            $mail->addBCC('bcc@example.com');
-
-
-            $content = Template::render('emails/verification-email', $model);
-
-            print_r($content);
-            exit;
+            [$html, $altBody] = self::render('emails/verification-email', $model);
 
             $mail->Subject = 'Please verify your email address!';
-            $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
-            $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+            $mail->Body    = $html;     // 'This is the HTML message body <b>in bold!</b>';
+            $mail->AltBody = $altBody;  // 'This is the body in plain text for non-HTML mail clients';
 
-            // $mail->send();
+            $mail->send();
             return true;
 
         } catch (Exception $e) {
@@ -94,6 +117,31 @@ class Email {
         return $success;
     }
 
+
+
+    public static function sendLoginOTP(array $model) {
+        $success = true;
+
+        $mail = self::newMessage($model);
+
+        try {
+
+            [$html, $altBody] = self::render('emails/one-time-password', $model);
+
+            $mail->Subject = 'Please verify your email address!';
+            $mail->Body    = $html;     // 'This is the HTML message body <b>in bold!</b>';
+            $mail->AltBody = $altBody;  // 'This is the body in plain text for non-HTML mail clients';
+
+            $mail->send();
+            return true;
+
+        } catch (Exception $e) {
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            return false;
+        }
+
+        return $success;
+    }
 
 
 

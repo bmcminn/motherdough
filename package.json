@@ -9,8 +9,9 @@
     "dev-client": "npm run client -- run build -- --watch",
     "client": "npm --prefix ./client",
     "--postinstall": "composer install && npm run client -- install",
-    "mjml": "node .bin/emails.js",
-    "mjml:build": "npm run mjml:dev -- --build"
+    "emails": "node .bin/emails.js",
+    "mjml:build": "npm run mjml:dev -- --build",
+    "test-emails": "php _test/test-emails.php"
   },
   "author": "bmcminn <bmcminn@users.noreply.github.com>",
   "license": "MIT",

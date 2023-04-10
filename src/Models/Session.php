@@ -37,13 +37,9 @@ class Session {
             session_save_path($options['path']);
         }
 
-
-        self::start();
-
         if (!self::get('expires')) {
             self::set('expires', now() + $options['expires']);
         }
-
     }
 
 

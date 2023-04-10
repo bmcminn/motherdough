@@ -92,14 +92,15 @@ Config::setup([
         // TODO: convert these values to use the environment variables
         // NOTES: https://github.com/rnwood/smtp4dev/wiki/Configuring-Clients
         'smtp' => [
-            'debug'     => true,
+            'auth'      => false,
+            'autotls'   => false,
+            'debug'     => false,
             'enabled'   => true,
             'host'      => 'smtp4dev',
-            'auth'      => false,
-            'username'  => '',
             'password'  => '',
-            'secure'    => false,
             'port'      => 25,
+            'secure'    => false,
+            'username'  => '',
         ],
     ],
 

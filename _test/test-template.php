@@ -1,9 +1,10 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
-
-
 use App\Helpers\Template;
+
+chdir('_test');
+
+require __DIR__ . '/../vendor/autoload.php';
 
 
 Template::setup([

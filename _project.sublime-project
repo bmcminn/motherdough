@@ -18,6 +18,8 @@
                 "storage/cache",
                 "storage/database",
                 "vendor",
+                "public/",
+                "!client/public/*",
             ],
             "file_exclude_patterns": [
                 "*.lock*",

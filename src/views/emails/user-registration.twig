@@ -37,11 +37,11 @@ style="direction:ltr;font-size:0;padding:20px 0;text-align:center">
 <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:600px;" ><![endif]-->
 <div class="mj-column-per-100 mj-outlook-group-fix" 
 style=font-size:0;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%>
-<table border=0 cellpadding=0 cellspacing=0 role=presentation 
-style=vertical-align:top width=100%><tbody><tr><td 
-style=font-size:0;word-break:break-word><div style=height:40px;line-height:40px>
-&#8202;</div></td></tr></tbody></table></div>
-<!--[if mso | IE]></td></tr></table><![endif]--></td></tr></tbody></table></div>
+<table border=0 cellpadding=0 cellspacing=0 role=presentation width=100%><tbody>
+<tr><td style=vertical-align:top;padding:20px><table border=0 cellpadding=0 
+cellspacing=0 role=presentation style width=100%><tbody></tbody></table></td>
+</tr></tbody></table></div><!--[if mso | IE]></td></tr></table><![endif]--></td>
+</tr></tbody></table></div>
 <!--[if mso | IE]></td></tr></table><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="#ffffff" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
 <div 
 style="background:#fff;background-color:#fff;margin:0 auto;border-radius:3px;max-width:600px">
@@ -55,20 +55,26 @@ style=font-size:0;text-align:left;direction:ltr;display:inline-block;vertical-al
 style=vertical-align:top width=100%><tbody><tr><td align=center 
 style="font-size:0;padding:10px 25px;word-break:break-word"><div 
 style=font-family:Ubuntu,Helvetica,Arial,sans-serif;font-size:25px;font-weight:700;line-height:1;text-align:center;color:#000>
-Verify Your Account</div></td></tr><tr><td align=center class=text 
+Thank you for registering!</div></td></tr><tr><td align=center class=text 
 style="font-size:0;padding:10px 25px;word-break:break-word"><div 
 style=font-family:Ubuntu,Helvetica,Arial,sans-serif;text-align:center;color:#000;font-size:13px;line-height:18px>
-Hello {{user.name}}, we received a request to log in to your {{company.name}} account.
-</div></td></tr><tr><td align=center 
-style=font-size:0;padding:25px;word-break:break-word><div 
+Hello {{user.name}}, and congratulations on setting up your account!</div></td>
+</tr><tr><td align=center style=font-size:0;padding:25px;word-break:break-word>
+<div 
 style=font-family:Ubuntu,Helvetica,Arial,sans-serif;font-size:30px;line-height:1;text-align:center;color:#000>
 {{otp}}</div></td></tr><tr><td align=center class=text 
 style="font-size:0;padding:10px 25px;word-break:break-word"><div 
 style=font-family:Ubuntu,Helvetica,Arial,sans-serif;text-align:center;color:#000;font-size:13px;line-height:18px>
 Enter this code on the login screen to confirm your identity.<br><br>
 Note: Do not share this code with anyone. {{company.name}} employees will not ask you for this code.
-</div></td></tr></tbody></table></div>
-<!--[if mso | IE]></td></tr></table><![endif]--></td></tr></tbody></table></div>
+</div></td></tr><tr><td align=center class=text 
+style="font-size:0;padding:10px 25px;word-break:break-word"><div 
+style=font-family:Ubuntu,Helvetica,Arial,sans-serif;text-align:center;color:#000;font-size:13px;line-height:18px>
+We hope you enjoy using {{app.name}}, and if you have any trouble please feel free review our 
+<a href={{company.links.faq}}>FAQ page</a> or contact our <a 
+href=mailto:{{company.emails.support}}>support team</a>.</div></td></tr></tbody>
+</table></div><!--[if mso | IE]></td></tr></table><![endif]--></td></tr></tbody>
+</table></div>
 <!--[if mso | IE]></td></tr></table><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
 <div style="margin:0 auto;max-width:600px"><table align=center border=0 
 cellpadding=0 cellspacing=0 role=presentation style=width:100%><tbody><tr><td 
@@ -93,4 +99,4 @@ href={{public_routes.terms|url}}>Terms of Service</a></div></td></tr></tbody>
 </table></div><!--[if mso | IE]></td></tr></table><![endif]--></div></body>
 </html>
 -----
-This is standard text content {{user.name}}
+This is standard text content

@@ -5,6 +5,7 @@ use App\Helpers\Hash;
 use RedBeanPHP\Facade as R;
 use Ramsey\Uuid\Uuid;
 
+chdir('_test');
 
 require __DIR__ . '/../vendor/autoload.php';
 

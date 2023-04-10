@@ -90,10 +90,10 @@ function url(string $path, array $query=[]) {
     $scheme = $_SERVER['REQUEST_SCHEME'] ?? 'http';
     $scheme .= '://';
 
-    $host = $_SERVER['SERVER_NAME'];
+    $host = $_SERVER['SERVER_NAME'] ?? 'localhost';
 
-    $port = $_SERVER['SERVER_PORT'];
-    $port = $port !== '80' ? ":${port}" : '';
+    $port = $_SERVER['SERVER_PORT'] ?? '80';
+    $port = $port !== '80' ? ":{$port}" : '';
 
     if (!empty($query)) {
         $query = '?' . http_build_query($query);

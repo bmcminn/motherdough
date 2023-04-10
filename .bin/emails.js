@@ -1,9 +1,9 @@
 const chokidar  = require('chokidar')
-const fs        = require('fs').promises
+const fs        = require('node:fs').promises
 const HTML      = require('html-minifier')
 const mjml2html = require('mjml')
 const path      = require('upath')
-const yargs      = require('yargs')
+const yargs     = require('yargs')
 
 
 const args = yargs.argv
@@ -16,7 +16,10 @@ const opts = {
     outputExt:      args.ext    ?? '.twig',
     minify:         args.minify ?? true,
     build:          args.build  ?? false,
+    altBodySplit:   args.split  ?? '\n-----\n',
 }
+
+console.log(opts)
 
 
 const mjmlOptions = {
@@ -58,16 +61,16 @@ async function render(filepath) {
     if (filepath.includes('partials')) { return }
 
     try {
-        const content       = (await fs.readFile(filepath)).toString()
-        const filename      = path.basename(filepath, '.mjml')
+        let [ mjml, altBody ]   = (await fs.readFile(filepath)).toString().split(opts.altBodySplit).map(el => el.trim())
+        const filename          = path.basename(filepath, '.mjml')
 
-        const mjmlpath      = path.dirname(filepath)
-        const renderpath    = path.resolve(mjmlpath, '..', opts.outputDir)
-        const testpath      = path.resolve(mjmlpath, '..', opts.testOutputDir)
+        const mjmlpath          = path.dirname(filepath)
+        const renderpath        = path.resolve(mjmlpath, '..', opts.outputDir)
+        const testpath          = path.resolve(mjmlpath, '..', opts.testOutputDir)
 
-        mjmlOptions.filePath = filepath
+        mjmlOptions.filePath    = filepath
 
-        const res = mjml2html(content, mjmlOptions)
+        const res = mjml2html(mjml, mjmlOptions)
 
         res.errors.forEach(err => {
             console.error(err.formattedMessage)
@@ -82,11 +85,13 @@ async function render(filepath) {
         fs.mkdir(renderpath, { recursive: true })
 
         if (opts.minify) {
-            res.htmlmin = HTML.minify(res.html, minifyOptions)
+            res.html = HTML.minify(res.html, minifyOptions)
         }
 
+        res.html = [res.html, altBody].join(opts.altBodySplit)
+
         fs.writeFile(`${testpath}/${filename}.html`, res.html)
-        fs.writeFile(`${renderpath}/${filename}${opts.outputExt}`, res.htmlmin ?? res.html)
+        fs.writeFile(`${renderpath}/${filename}${opts.outputExt}`, res.html)
 
         console.log('rendering', `${filename}${opts.outputExt}`)
 
@@ -95,7 +100,6 @@ async function render(filepath) {
 
     }
 }
-
 
 
 watcher.on('add', (filepath) => {
@@ -119,8 +123,10 @@ watcher.on('change', (filepath) => {
 })
 
 
-if (opts.build) {
-    filepaths.forEach(render)
+watcher.on('ready', () => {
+    if (opts.build) {
+        filepaths.forEach(render)
 
-    watcher.close().then(() => console.log('closed'));
-}
+        watcher.close().then(() => console.log('closed'));
+    }
+})

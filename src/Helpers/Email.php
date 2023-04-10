@@ -22,6 +22,13 @@ use PHPMailer\PHPMailer\SMTP;
 
 class Email {
 
+    private static string $altBodySplit = "\n-----\n";
+
+
+    public static function setup(array $options = []) {
+
+    }
+
 
     private static function newMessage(array $model) : PHPMailer {
 
@@ -41,16 +48,14 @@ class Email {
         // Enable verbose debug output
         if ($smtp['debug']) { $mail->SMTPDebug = SMTP::DEBUG_SERVER; }
 
-        // $mail->SMTPSecure = $smtp['secure']
-        //     ? PHPMailer::ENCRYPTION_SMTPS
-        //     : 'Off'
-        //     ;
+        $mail->SMTPSecure = $smtp['secure']
+            ? PHPMailer::ENCRYPTION_SMTPS
+            : 'Off'
+            ;
 
-        $mail->Host     = $stmp['host'];        // Set the SMTP server to send through
-        $mail->SMTPAuth = $stmp['auth'];        // Enable SMTP authentication
-
-        $mail->SMTPAuth     = false;                                   //Enable SMTP authentication
-        $mail->SMTPAutoTls  = false;
+        $mail->Host         = $smtp['host'];        // Set the SMTP server to send through
+        $mail->SMTPAuth     = $smtp['auth'];        // Enable SMTP authentication
+        $mail->SMTPAutoTls  = $smtp['autotls'];
 
         // $mail->Username = $smtp['username'];    // SMTP username
         // $mail->Password = $smtp['password'];    // SMTP password
@@ -81,7 +86,7 @@ class Email {
     protected static function render($name, $model=[]) {
         $template = Template::render($name, $model);
 
-        $template = explode('-----', $template);
+        $template = explode(self::$altBodySplit, $template);
 
         return $template;
     }
@@ -126,7 +131,9 @@ class Email {
 
         try {
 
-            [$html, $altBody] = self::render('emails/one-time-password', $model);
+            $template = self::render('emails/one-time-password', $model);
+
+            [$html, $altBody] = $template;
 
             $mail->Subject = 'Please verify your email address!';
             $mail->Body    = $html;     // 'This is the HTML message body <b>in bold!</b>';

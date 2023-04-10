@@ -2,6 +2,8 @@
 
 use App\Helpers\Token;
 
+chdir('_test');
+
 require __DIR__ . '/../vendor/autoload.php';
 
 Token::setup();

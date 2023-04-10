@@ -89,7 +89,8 @@ class AuthController {
         Session::set('ip_hash_raw', $ipAddress);
 
         // $model = Config::get();
-        $model['user'] = $user;
+        $model['user']  = $user;
+        $model['otp'] = generateOTP(6, OTP_ALPHANUMERIC);
 
         Email::sendLoginOTP($model);
 

@@ -84,7 +84,7 @@ services:
             - 143:143
         volumes:
             # This is where smtp4dev stores the database..
-            - ./.container/smtp4dev:/smtp4dev
+            - .container/smtp4dev:/smtp4dev
         environment:
             # Uncomment to customise these settings
 
@@ -93,3 +93,7 @@ services:
 
             #Specifies the server hostname. Used in auto-generated TLS certificate if enabled.
             - ServerOptions__HostName=smtp4dev
+
+volumes:
+    .container:
+    .container/smtp4dev:

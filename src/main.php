@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Session;
 use RedBeanPHP\Facade as R;
 use Slim\Factory\AppFactory;
 
@@ -9,6 +10,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 // // INITIALIZE SERVICES SETUP
 // require __DIR__ . '/setup.php';
+Session::start();
 
 
 // INIT APPLICATION

@@ -7,7 +7,7 @@
         <mj-text align="center"
             css-class="text"
         >
-            &copy; {{company.legalName}} {{year}}. All Rights Reserved.
+            &copy; {{company.legalName}} {{date.year}}. All Rights Reserved.
             <br><br>
             <a href="{{public_routes.about|url}}">About</a>  |
             <a href="{{public_routes.privacy|url}}">Privacy Policy</a>  |

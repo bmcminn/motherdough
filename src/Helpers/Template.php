@@ -47,7 +47,7 @@ class Template {
         self::$template = new \Twig\Environment($loader, self::config('twig'));
 
         foreach (self::config('filters') as $key => $cb) {
-            // self::$template->registerFilter($key, $cb);
+            self::$template->addFilter(new \Twig\TwigFilter($key, $cb));
         }
     }
 

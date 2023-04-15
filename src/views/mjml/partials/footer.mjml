@@ -7,10 +7,11 @@
         <mj-text align="center"
             css-class="text"
         >
-            &copy; {{company.legalName}} {{year}}. All Rights Reserved.
+            &copy; {{company.legalName}} {{date.year}}. All Rights Reserved.
             <br><br>
-            <a href="{{company.links.privacypolicy|url}}">Privacy Policy</a>  |
-            <a href="{{company.links.termsofservice|url}}">Terms of Service</a>
+            <a href="{{public_routes.about|url}}">About</a>  |
+            <a href="{{public_routes.privacy|url}}">Privacy Policy</a>  |
+            <a href="{{public_routes.terms|url}}">Terms of Service</a>
         </mj-text>
     </mj-column>
 </mj-section>

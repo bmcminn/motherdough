@@ -2,9 +2,6 @@
 #   - https://perishablepress.com/stupid-htaccess-tricks/
 #   - https://github.com/h5bp/server-configs-apache/blob/main/dist/.htaccess
 
-
-
-
 RewriteEngine On
 
 # # Redirect www to non-www

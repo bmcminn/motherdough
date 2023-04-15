@@ -1,7 +1,11 @@
 <?php
 
 use App\Helpers\Config;
+use App\Helpers\Email;
+use App\Helpers\Hash;
 use App\Helpers\Validator;
+
+use App\Models\Session;
 use App\Models\User;
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -28,9 +32,9 @@ class AuthController {
         $data = Validator::validate($body, [
             [ 'email',              'required|email|unique:user,email',   'email' ],
             // TODO: password, add not_invalid rule to check against knlown compromised passwords
-            [ 'password',           'required|min:8',               FILTER_SANITIZE_STRING ],
-            [ 'password_confirm',   'required|same:password',       FILTER_SANITIZE_STRING ],
-            [ 'dateofbirth',        "required|min_age:{$minAge}",   FILTER_SANITIZE_STRING ],
+            [ 'password',           'required|min:8',               'htmlspecialchars' ],
+            [ 'password_confirm',   'required|same:password',       'htmlspecialchars' ],
+            [ 'dateofbirth',        "required|min_age:{$minAge}",   'htmlspecialchars' ],
         ]);
 
         if (isset($data['messages'])) {
@@ -46,14 +50,14 @@ class AuthController {
 
         $token = generateOTP();
 
-        $_SESSION['token'] = $token;
+        Session::set('token', $token);
 
         $model = [
             'user'  => $user,
             'token' => $token,
         ];
 
-        // Email::sendVerificationEmail($model);
+        Email::sendVerificationEmail($model);
 
         return jsonResponse([
             'message' => 'success',
@@ -62,23 +66,33 @@ class AuthController {
 
 
     public function login(Request $req, Response $res) : Response {
-        // $this here refer to App instance
-        // $config = $this->config['any.config'];
-        // $file   = $this->request->file('a_file');
 
         $body = $req->getParsedBody();
 
         // $validate = Validator::loginModel($body);
-        $data = Validator::validate($body, [
+        $params = Validator::validate($body, [
             [ 'email',      'required',         'email' ],
-            [ 'password',   'required|min:8',   FILTER_SANITIZE_STRING ],
+            [ 'password',   'required|min:8',   'htmlspecialchars' ],
         ]);
 
-        $data['debug'] = $body;
-        // $data['message'] = $success;
+        $data = [];
+
+        $user = User::findByEmail($params['email']);
+
+        $data['user']   = $user->export();
+        $data['debug']  = $params;
 
         // capture the IP address of the user that set the session for future validation
-        Session::set('ip_hash', Hash::md5($_SERVER['REMOTE_ADDR']));
+        $ipAddress = $_SERVER['REMOTE_ADDR'];
+
+        Session::set('ip_hash',     Hash::md5($ipAddress));
+        Session::set('ip_hash_raw', $ipAddress);
+
+        // $model = Config::get();
+        $model['user']  = $user;
+        $model['otp'] = generateOTP(6, OTP_ALPHANUMERIC);
+
+        Email::sendLoginOTP($model);
 
         return jsonResponse($data);
     }

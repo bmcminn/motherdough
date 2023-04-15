@@ -35,17 +35,19 @@ define('HTTP_SERVER_ERROR', 500);
 Config::setup([
 
     'company' => [
-        'name'      => '',
-        'legalName' => '',
-        'phone'     => '',
-        'email'     => '',
+        'name'          => 'Company Name',
+        'legalName'     => 'Company Name, LLC.',
+        'phone'         => '555-555-1234',
+        'email'         => 'email@company.name',
+        'emailFrom'     => 'do-not-reply@company.name',
+        'emailReply'    => 'replyto@company.name',
 
         'address' => [
-            'street1'   => '',
-            'street2'   => '',
-            'city'      => '',
-            'state'     => '',
-            'zipcode'   => '',
+            'street1'   => '123 Waffleton Way',
+            'street2'   => 'Building 3, Suite 205',
+            'city'      => 'Fauston',
+            'state'     => 'AA',
+            'zipcode'   => '55555',
         ],
     ],
 
@@ -87,15 +89,18 @@ Config::setup([
     ],
 
     'emails' => [
+        // TODO: convert these values to use the environment variables
+        // NOTES: https://github.com/rnwood/smtp4dev/wiki/Configuring-Clients
         'smtp' => [
-            'debug'     => true,
+            'auth'      => false,
+            'autotls'   => false,
+            'debug'     => false,
             'enabled'   => true,
-            'host'      => 'smtp.example.com',
-            'auth'      => true,
-            'username'  => 'user@example.com',
-            'password'  => 'secret',
-            'secure'    => true,
-            'port'      => 465,
+            'host'      => 'smtp4dev',
+            'password'  => '',
+            'port'      => 25,
+            'secure'    => false,
+            'username'  => '',
         ],
     ],
 
@@ -154,6 +159,9 @@ Template::setup([
     'ext'       => '.twig',
     'cache_dir' => path(Config::get('paths.cache_dir') . '/views'),
     'views_dir' => Config::get('paths.views_dir'),
+    'filters' => [
+        'url' => 'url'
+    ],
 ]);
 
 

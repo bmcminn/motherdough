@@ -7,6 +7,7 @@ use App\Models\User;
 
 use RedBeanPHP\Facade as R;
 
+
 /**
  * This class provides static methods for rendering templates.
  */
@@ -68,6 +69,9 @@ class Validator {
                         $data[$key]         = self::sanitizeEmail($data[$key]);
                         $data[$key.'_base'] = self::stripEmailSubaddress($data[$key]);
                         break;
+                    case 'htmlspecialchars':
+                        $data[$key] = htmlspecialchars($data[$key]);
+                        break;
                     default:
                         throw new \ErrorException("Missing \$sanitizer method for '$sanitizer'.");
                         break;
@@ -75,6 +79,7 @@ class Validator {
 
                 continue;
             }
+
 
             $data[$key] = filter_var($data[$key], $sanitizer);
         }

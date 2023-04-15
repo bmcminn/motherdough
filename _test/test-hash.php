@@ -7,6 +7,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 Hash::setup();
 
+chdir('_test');
 
 $password = 'testpassword';
 

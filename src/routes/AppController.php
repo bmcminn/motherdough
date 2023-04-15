@@ -30,7 +30,7 @@ class AppController {
             </script>
         SRC;
 
-        $body = preg_replace('/<!--PHPINCLUDE-->/i', trim($src), $body);
+        $body = preg_replace('/<!--\s*PHPINCLUDE\s*-->/i', trim($src), $body);
 
         $res->getBody()->write($body);
 

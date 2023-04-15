@@ -9,6 +9,7 @@ import '@/assets/normalize.css'
 import '@/assets/base.css'
 import '@/assets/main.css'
 
+
 const app = createApp(App)
 
 app.use(createPinia())
@@ -17,3 +18,4 @@ app.use(router)
 app.use(plugin, defaultConfig)
 
 app.mount('#app')
+

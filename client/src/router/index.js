@@ -11,7 +11,6 @@ const router = createRouter({
       component: HomeView,
     },
 
-
     {
       path: window.AppConfig.routes.about,
       name: 'about',
@@ -21,23 +20,25 @@ const router = createRouter({
       component: () => import('@/views/AboutView.vue'),
     },
 
-
     {
       path: window.AppConfig.routes.login,
       name: 'login',
       component: () => import('@/views/AuthView.vue'),
+      force: true,
     },
 
     {
       path: window.AppConfig.routes.register,
       name: 'register',
       component: () => import('@/views/AuthView.vue'),
+      force: true,
     },
 
     {
       path: window.AppConfig.routes.forgotpassword,
       name: 'forgotpassword',
       component: () => import('@/views/AuthView.vue'),
+      force: true,
     },
 
   ]

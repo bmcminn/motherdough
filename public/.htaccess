@@ -19,7 +19,7 @@ RewriteRule ^ index.php [QSA,L]
 
 
 # diguise all file extensions as php
-ForceType application/x-httpd-php
+# ForceType application/x-httpd-php
 
 
 # protect against DOS attacks by limiting file upload size

@@ -8,6 +8,29 @@
   </head>
   <body>
     <div id="app"></div>
+    <script>
+        window.AppConfig = window.AppConfig ?? {
+
+            routes: {
+                // PUBLIC CONTENT PAGES
+                home:       '/',
+                about:      '/about',
+                privacy:    '/privacy-policy',
+                terms:      '/terms-of-use',
+
+                // AUTH ROUTES
+                login:         '/login',
+                logout:        '/logout',
+                register:      '/register',
+                passwordreset: '/password-reset',
+                verification:  '/verification',
+
+                // DASHBOARD ROUTES
+
+            },
+
+        }
+    </script>
     <script type="module" src="/src/main.js"></script>
     <!--PHPINCLUDE-->
   </body>

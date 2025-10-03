@@ -6,7 +6,8 @@ namespace App\Helpers;
 /**
  * A class wrapper for any given hash library you want to implement; Argon2ID by default
  * @sauce https://medium.com/analytics-vidhya/password-hashing-pbkdf2-scrypt-bcrypt-and-argon2-e25aaf41598e
- * @note https://twitter.com/Sc00bzT/status/1557495201064558592
+ * @note: https://twitter.com/Sc00bzT/status/1557495201064558592
+ * @note: https://web.archive.org/web/20250118010543/https://tobtu.com/minimum-password-settings/
  */
 class Hash {
 
